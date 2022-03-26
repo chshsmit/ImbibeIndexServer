@@ -3,14 +3,14 @@
 // ----------------------------------------------------
 
 import express, { Response } from "express";
+import { User } from "../../model/User";
+import { CustomRequest } from "../../utils/types";
 import {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
-} from "imbibe-index-shared";
-import { User } from "../../model/User";
-import { CustomRequest } from "../../utils/types";
+} from "./types";
 
 // ----------------------------------------------------
 // Constants
