@@ -9,8 +9,7 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-  success: boolean;
-  error: string;
+  email: string;
 }
 
 //---------------------------------------------------------------
@@ -22,10 +21,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  error: string | null;
+  firstName: string;
+  lastName: string;
+  email: string;
 }

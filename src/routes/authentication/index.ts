@@ -4,7 +4,7 @@
 
 import express, { Response } from "express";
 import { User } from "../../model/User";
-import { CustomRequest } from "../../utils/types";
+import { CustomRequest, ErrorResponse } from "../../utils/types";
 import {
   LoginRequest,
   LoginResponse,
@@ -26,16 +26,17 @@ authenticationRouter.post(
   "/register",
   async (
     req: CustomRequest<RegisterRequest>,
-    res: Response<RegisterResponse>
+    res: Response<RegisterResponse | ErrorResponse>
   ) => {
     try {
       const { email, firstName, lastName } = req.body;
 
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser)
-        return res
-          .status(400)
-          .json({ success: false, error: "User exists with that email" });
+        return res.status(400).json({
+          errorCode: "UserAlreadyExists",
+          message: "A user already exists with that email",
+        });
 
       const newUser = new User();
       newUser.email = email;
@@ -43,10 +44,13 @@ authenticationRouter.post(
       newUser.lastName = lastName;
 
       await newUser.save();
-      return res.status(200).json({ success: true, error: "success" });
+      return res.status(200).json({ email });
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ success: false, error: err });
+      return res.status(500).json({
+        errorCode: "UnexpectedError",
+        message: "Something unexpected happened",
+      });
     }
   }
 );
@@ -55,22 +59,31 @@ authenticationRouter.post(
 
 authenticationRouter.post(
   "/login",
-  async (req: CustomRequest<LoginRequest>, res: Response<LoginResponse>) => {
+  async (
+    req: CustomRequest<LoginRequest>,
+    res: Response<LoginResponse | ErrorResponse>
+  ) => {
     try {
       const { email } = req.body;
 
       const user = await User.findOne({ where: { email } });
       if (!user)
-        return res
-          .status(404)
-          .json({ data: null, error: "User does not exist with that email" });
+        return res.status(404).json({
+          errorCode: "UserDoesNotExist",
+          message: "Did not find user with that email.",
+        });
 
-      return res.status(200).json({ data: user, error: null });
+      return res.status(200).json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      });
     } catch (err) {
       console.log(err);
-      return res
-        .status(500)
-        .json({ data: null, error: "Something unexpected happened" });
+      return res.status(500).json({
+        errorCode: "UnexpectedError",
+        message: "Something unexpected happened",
+      });
     }
   }
 );
