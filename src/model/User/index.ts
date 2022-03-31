@@ -13,4 +13,7 @@ export class User extends BaseEntity {
 
   @Column("text")
   email: string;
+
+  @Column("text", { default: "testingForNow" })
+  hashedPassword: string;
 }

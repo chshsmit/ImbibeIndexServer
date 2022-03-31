@@ -2,15 +2,12 @@
 // Imports
 // ----------------------------------------------------
 
+import bcrypt from "bcrypt";
 import express, { Response } from "express";
+import passport from "passport";
 import { User } from "../../model/User";
 import { CustomRequest, ErrorResponse } from "../../utils/types";
-import {
-  LoginRequest,
-  LoginResponse,
-  RegisterRequest,
-  RegisterResponse,
-} from "./types";
+import { LoginResponse, RegisterRequest, RegisterResponse } from "./types";
 
 // ----------------------------------------------------
 // Constants
@@ -29,7 +26,7 @@ authenticationRouter.post(
     res: Response<RegisterResponse | ErrorResponse>
   ) => {
     try {
-      const { email, firstName, lastName } = req.body;
+      const { email, firstName, lastName, password } = req.body;
 
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser)
@@ -42,6 +39,7 @@ authenticationRouter.post(
       newUser.email = email;
       newUser.firstName = firstName;
       newUser.lastName = lastName;
+      newUser.hashedPassword = await bcrypt.hash(password, 10);
 
       await newUser.save();
       return res.status(200).json({ email });
@@ -59,25 +57,27 @@ authenticationRouter.post(
 
 authenticationRouter.post(
   "/login",
-  async (
-    req: CustomRequest<LoginRequest>,
-    res: Response<LoginResponse | ErrorResponse>
-  ) => {
+  async (req, res: Response<LoginResponse | ErrorResponse>, next) => {
     try {
-      const { email } = req.body;
-
-      const user = await User.findOne({ where: { email } });
-      if (!user)
-        return res.status(404).json({
-          errorCode: "UserDoesNotExist",
-          message: "Did not find user with that email.",
-        });
-
-      return res.status(200).json({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      });
+      passport.authenticate("local", (err, user: User) => {
+        console.log(err);
+        if (err) throw err;
+        if (!user) {
+          res.send({
+            errorCode: "UserDoesNotExist",
+            message: "Did not find user with that email",
+          });
+        } else {
+          req.logIn(user, (err) => {
+            if (err) throw err;
+            res.send({
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+            });
+          });
+        }
+      })(req, res, next);
     } catch (err) {
       console.log(err);
       return res.status(500).json({
