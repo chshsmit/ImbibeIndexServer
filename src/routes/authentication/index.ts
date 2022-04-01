@@ -88,4 +88,16 @@ authenticationRouter.post(
   }
 );
 
+// ----------------------------------------------------
+
+authenticationRouter.get("/logout", async (req, res) => {
+  try {
+    await req.logOut();
+    return res.status(200).json({ logout: "success" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ logout: "error" });
+  }
+});
+
 export default authenticationRouter;

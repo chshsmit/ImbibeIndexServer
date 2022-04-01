@@ -8,6 +8,8 @@ import passport from "passport";
 import "reflect-metadata";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import authenticationRouter from "./routes/authentication";
+import recipeRouter from "./routes/recipes";
+import userRouter from "./routes/user";
 import { AppDataSource } from "./utils/Database";
 import { localPassportConfig } from "./utils/passport";
 
@@ -21,6 +23,8 @@ const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: { origin: "http://localhost:3000" },
 });
+
+app.set("io", io);
 
 //------------------------------------------------------------------------------------
 // Middlewares
@@ -58,14 +62,17 @@ localPassportConfig(passport);
 //------------------------------------------------------------------------------------
 
 app.use("/auth", authenticationRouter);
+app.use("/user", userRouter);
+app.use("/recipes", recipeRouter);
 
-app.get("/user", async (req, res) => {
-  const user = await req.user;
+// app.get("/user", async (req, res) => {
+//   const user = (await req.user) as User;
 
-  console.log("USER");
-  console.log(req.user);
-  res.send(user);
-});
+//   if (!user) res.send("");
+
+//   const { email, firstName, lastName } = user;
+//   res.send({ email, firstName, lastName });
+// });
 
 //------------------------------------------------------------------------------------
 // Sockets
