@@ -63,9 +63,9 @@ authenticationRouter.post(
         console.log(err);
         if (err) throw err;
         if (!user) {
-          res.send({
+          res.status(401).send({
             errorCode: "UserDoesNotExist",
-            message: "Did not find user with that email",
+            message: "Incorrect email or password",
           });
         } else {
           req.logIn(user, (err) => {
@@ -74,6 +74,7 @@ authenticationRouter.post(
               firstName: user.firstName,
               lastName: user.lastName,
               email: user.email,
+              id: user.id,
             });
           });
         }

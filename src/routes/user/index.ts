@@ -22,8 +22,8 @@ userRouter.get("/", async (req, res) => {
 
   if (!user) return res.send("");
 
-  const { email, firstName, lastName } = user;
-  res.send({ email, firstName, lastName });
+  const { email, firstName, lastName, id } = user;
+  res.send({ email, firstName, lastName, id });
 });
 
 export default userRouter;

@@ -1,4 +1,4 @@
-export interface Collection {
+export interface CollectionEntry {
   type: "recipe" | "collection";
   name: string;
   id: string;
@@ -6,9 +6,9 @@ export interface Collection {
   parent: string | null;
 }
 
-export const CollectionMap: Map<string, Collection> = new Map<
+export const CollectionEntryMap: Map<string, CollectionEntry> = new Map<
   string,
-  Collection
+  CollectionEntry
 >([
   [
     "recipes-collection",

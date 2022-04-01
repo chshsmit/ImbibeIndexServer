@@ -2,8 +2,10 @@
 // Imports
 // ----------------------------------------------------
 
-import express from "express";
-import { CollectionMap } from "./data";
+import express, { Response } from "express";
+import { ErrorResponse } from "../../utils/types";
+import { CollectionEntryMap } from "./data";
+import { RecipesForUserResponse } from "./types";
 
 // ----------------------------------------------------
 // Constants
@@ -15,22 +17,15 @@ const recipeRouter = express.Router();
 // Routes
 // ----------------------------------------------------
 
-recipeRouter.get("/", async (req, res) => {
-  return res.status(200).json({ recipes: Object.fromEntries(CollectionMap) });
-});
+recipeRouter.get(
+  "/user/:userId",
+  async (req, res: Response<RecipesForUserResponse | ErrorResponse>) => {
+    console.log(req.params.userId);
 
-// ----------------------------------------------------
-
-recipeRouter.get("/collection/:collectionId", (req, res) => {
-  console.log(req.params.collectionId);
-
-  const collection = CollectionMap.get(req.params.collectionId);
-
-  if (collection) {
-    return res.status(200).json(collection);
-  } else {
-    return res.status(200).json({});
+    return res
+      .status(200)
+      .json({ recipes: Object.fromEntries(CollectionEntryMap) });
   }
-});
+);
 
 export default recipeRouter;
