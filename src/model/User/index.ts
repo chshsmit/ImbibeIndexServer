@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { CollectionEntry } from "../CollectionEntry";
+import { Collection } from "../Collection";
 
 @Entity()
 export class User extends BaseEntity {
@@ -24,6 +24,6 @@ export class User extends BaseEntity {
   @Column("text", { default: "testingForNow" })
   hashedPassword: string;
 
-  @OneToMany(() => CollectionEntry, (collectionEntry) => collectionEntry.user)
-  collections: CollectionEntry[];
+  @OneToMany(() => Collection, (collectionEntry) => collectionEntry.user)
+  collections: Collection[];
 }

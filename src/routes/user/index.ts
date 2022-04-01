@@ -18,8 +18,6 @@ const userRouter = express.Router();
 userRouter.get("/", async (req, res) => {
   const user = (await req.user) as User;
 
-  console.log(user);
-
   if (!user) return res.send("");
 
   const { email, firstName, lastName, id } = user;

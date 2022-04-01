@@ -1,25 +1,17 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { CollectionEntry } from "../CollectionEntry";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { Collection } from "../Collection";
 
 @Entity()
 export class Recipe extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  rowId: number;
+  @PrimaryColumn("text")
+  recipeId: string;
 
   @Column("boolean", { default: true })
   isPrivate: boolean;
 
-  @Column("text", { nullable: false })
-  collectionEntryId: string;
+  @Column("text")
+  name: string;
 
-  @OneToOne(() => CollectionEntry)
-  @JoinColumn()
-  collectionEntry: CollectionEntry;
+  @ManyToOne(() => Collection, (collection) => collection.recipes)
+  collection: Collection;
 }

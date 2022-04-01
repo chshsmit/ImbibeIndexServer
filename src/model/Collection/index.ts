@@ -6,28 +6,32 @@ import {
   OneToMany,
   PrimaryColumn,
 } from "typeorm";
+import { Recipe } from "../Recipe";
 import { User } from "../User";
 
 @Entity()
-export class CollectionEntry extends BaseEntity {
+export class Collection extends BaseEntity {
   @PrimaryColumn("text")
   id: string;
 
   @Column("text")
-  type: "recipe" | "collection";
-
-  @Column("text")
   name: string;
 
+  @Column("boolean", { default: true })
+  isPrivateCollection: boolean;
+
   @ManyToOne(
-    () => CollectionEntry,
+    () => Collection,
     (collectionEntry) => collectionEntry.subCollections,
     { nullable: true }
   )
-  parent: CollectionEntry;
+  parent: Collection;
 
-  @OneToMany(() => CollectionEntry, (collectionEntry) => collectionEntry.parent)
-  subCollections: CollectionEntry[];
+  @OneToMany(() => Collection, (collectionEntry) => collectionEntry.parent)
+  subCollections: Collection[];
+
+  @OneToMany(() => Recipe, (recipe) => recipe.collection)
+  recipes: Recipe[];
 
   @ManyToOne(() => User, (user) => user.collections)
   user: User;

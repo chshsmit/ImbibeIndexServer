@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
-import { CollectionEntry } from "../../model/CollectionEntry";
+import { Collection } from "../../model/Collection";
 import { Recipe } from "../../model/Recipe";
 import { TestModel } from "../../model/TestModel";
 import { User } from "../../model/User";
@@ -15,5 +15,5 @@ export const AppDataSource = new DataSource({
   password: process.env.PG_PASS,
   database: process.env.PG_DB,
   synchronize: true,
-  entities: [TestModel, User, CollectionEntry, Recipe],
+  entities: [TestModel, User, Collection, Recipe],
 });
