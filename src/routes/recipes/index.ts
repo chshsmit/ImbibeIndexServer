@@ -4,6 +4,7 @@
 
 import express, { Response } from "express";
 import { CollectionEntry } from "../../model/CollectionEntry";
+import { Recipe } from "../../model/Recipe";
 import { User } from "../../model/User";
 import { CustomRequest, ErrorResponse } from "../../utils/types";
 import { CollectionEntryMap } from "./data";
@@ -30,8 +31,6 @@ const recipeRouter = express.Router();
 recipeRouter.get(
   "/user/:userId",
   async (req, res: Response<RecipesForUserResponse | ErrorResponse>) => {
-    console.log(req.params.userId);
-
     return res
       .status(200)
       .json({ recipes: Object.fromEntries(CollectionEntryMap) });
@@ -44,8 +43,7 @@ recipeRouter.get(
  * Collections for a specific user
  */
 recipeRouter.get("/collections/user/:userId", async (req, res) => {
-  console.log(req.params.userId);
-
+  // TODO: COMPARE TO USER ACCESSING
   const collections = await CollectionEntry.find({
     where: { user: { id: Number(req.params.userId) } },
     relations: ["parent", "subCollections"],
@@ -78,12 +76,49 @@ recipeRouter.get("/collections/user/:userId", async (req, res) => {
 
 // ----------------------------------------------------
 
+recipeRouter.get("/:recipeId", async (req, res) => {
+  const user = (await req.user) as User;
+
+  const recipe = await Recipe.findOne({
+    where: { collectionEntryId: req.params.recipeId },
+    relations: ["collectionEntry", "collectionEntry.user"],
+  });
+
+  if (!recipe)
+    return res.status(404).json({ success: false, message: "could not find" });
+
+  if (recipe.isPrivate) {
+    if (user === undefined || user.id !== recipe.collectionEntry.user.id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "this is a private recipe" });
+    }
+  }
+
+  return res.status(200).json({
+    collectionEntry: {
+      id: recipe.collectionEntry.id,
+      name: recipe.collectionEntry.name,
+      type: recipe.collectionEntry.type,
+      user: {
+        email: recipe.collectionEntry.user.email,
+        firstName: recipe.collectionEntry.user.firstName,
+        lastName: recipe.collectionEntry.user.lastName,
+        id: recipe.collectionEntry.user.id,
+      },
+    },
+    isPrivate: recipe.isPrivate,
+    collectionEntryId: recipe.collectionEntryId,
+  });
+});
+
+// ----------------------------------------------------
+
+// TODO: COMPARE TO USER MAKING REQUEST
 recipeRouter.post(
   "/collections/user/:userId",
   async (req: CustomRequest<NewCollectionOrRecipeRequest>, res) => {
     const { id, type, name, parentId } = req.body;
-
-    console.log(parentId);
 
     // Make sure it has a parent
     const parentCollection = await CollectionEntry.findOne({
@@ -113,6 +148,13 @@ recipeRouter.post(
     newCollectionEntry.parent = parentCollection;
 
     await newCollectionEntry.save();
+
+    if (type === "recipe") {
+      const newRecipe = new Recipe();
+      newRecipe.collectionEntry = newCollectionEntry;
+
+      await newRecipe.save();
+    }
 
     return res.status(200).json({ success: true });
   }
