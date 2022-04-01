@@ -14,7 +14,7 @@ export const CollectionEntryMap: Map<string, CollectionEntry> = new Map<
     "recipes-collection",
     {
       type: "collection",
-      name: "Recipes",
+      name: "My Recipes",
       id: "recipes-collection",
       subCollections: ["collection-1", "collection-2", "recipe-1"],
       parent: null,
