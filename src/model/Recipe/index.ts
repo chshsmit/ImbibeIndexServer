@@ -13,7 +13,7 @@ export class Recipe extends BaseEntity {
   name: string;
 
   @Column("text", { default: "cocktail" })
-  recipeType: "cocktail" | "syrup" | "liqeur" | "other";
+  recipeType: "cocktail" | "syrup" | "liqueur" | "other";
 
   @ManyToOne(() => Collection, (collection) => collection.recipes)
   collection: Collection;

@@ -79,6 +79,7 @@ collectionsRouter.get(
           name: recipe.name,
           isPrivate: recipe.isPrivate,
           collectionId: id,
+          type: recipe.recipeType,
         });
       });
     });

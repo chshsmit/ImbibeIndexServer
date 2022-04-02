@@ -16,6 +16,7 @@ export interface RecipeEntryItem {
   name: string;
   isPrivate: boolean;
   collectionId: string;
+  type: "cocktail" | "syrup" | "liqueur" | "other";
 }
 
 export interface CollectionsForUserResponse {
