@@ -101,7 +101,9 @@ collectionsRouter.post(
     req: CustomRequest<NewCollectionRequest>,
     res: Response<NewCollectionResponse | ErrorResponse>
   ) => {
-    const requestUser = req.user as User;
+    const requestUser = (await req.user) as User;
+
+    console.log({ requestUser });
 
     if (
       requestUser === undefined ||
@@ -110,7 +112,7 @@ collectionsRouter.post(
       return res.status(401).json({
         errorCode: "UnauthorizedAccess",
         message:
-          "Sorry, you must be the user provided to create this new collection or recipe",
+          "Sorry, you must be the user provided to create this new collection",
       });
     }
 

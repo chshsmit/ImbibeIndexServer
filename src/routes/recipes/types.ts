@@ -8,3 +8,21 @@ export interface RecipeResponse {
   name: string;
   collectionId: string;
 }
+
+//---------------------------------------------------------------
+// Create new Recipe
+// POST /
+//---------------------------------------------------------------
+
+export interface CreateRecipeRequest {
+  id: string;
+  name: string;
+  parentId: string;
+  isPrivate: boolean;
+  type: "cocktail" | "syrup" | "liqeur" | "other";
+}
+
+export interface CreateRecipeResponse {
+  success: boolean;
+  id: string;
+}
