@@ -8,6 +8,7 @@ import passport from "passport";
 import "reflect-metadata";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import authenticationRouter from "./routes/authentication";
+import collectionsRouter from "./routes/collections";
 import recipeRouter from "./routes/recipes";
 import userRouter from "./routes/user";
 import { AppDataSource } from "./utils/Database";
@@ -64,6 +65,7 @@ localPassportConfig(passport);
 app.use("/auth", authenticationRouter);
 app.use("/user", userRouter);
 app.use("/recipes", recipeRouter);
+app.use("/collections", collectionsRouter);
 
 // app.get("/user", async (req, res) => {
 //   const user = (await req.user) as User;
