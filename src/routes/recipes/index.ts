@@ -16,14 +16,6 @@ import {
   RecipeResponse,
 } from "./types";
 
-// interface CollectionEntryItem {
-//   type: "recipe" | "collection";
-//   name: string;
-//   id: string;
-//   subCollections: Array<string>;
-//   parent: string | null;
-// }
-
 // ----------------------------------------------------
 // Constants
 // ----------------------------------------------------
@@ -173,18 +165,18 @@ recipeRouter.get(
         message: "The recipe you requested does not exist",
       });
 
-    // if (recipe.isPrivate) {
-    //   if (
-    //     requestUser === undefined ||
-    //     requestUser.id !== recipe.collection.user.id
-    //   ) {
-    //     return res.status(401).json({
-    //       errorCode: "UnauthorizedAccess",
-    //       message:
-    //         "Sorry this is a private recipe. Only the user that created it has access",
-    //     });
-    //   }
-    // }
+    if (recipe.isPrivate) {
+      if (
+        requestUser === undefined ||
+        requestUser.id !== recipe.collection.user.id
+      ) {
+        return res.status(401).json({
+          errorCode: "UnauthorizedAccess",
+          message:
+            "Sorry this is a private recipe. Only the user that created it has access",
+        });
+      }
+    }
 
     // Desctructuring for Response
     const { recipeId, name } = recipe;
