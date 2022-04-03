@@ -14,6 +14,8 @@ import userRouter from "./routes/user";
 import { AppDataSource } from "./utils/Database";
 import { localPassportConfig } from "./utils/passport";
 
+const MILLIS_IN_A_WEEK = 1000 * 60 * 60 * 24 * 7;
+
 //------------------------------------------------------------------------------------
 // Initializations
 //------------------------------------------------------------------------------------
@@ -49,6 +51,9 @@ app.use(
     secret: "supersecrettestsecret",
     resave: true,
     saveUninitialized: true,
+    cookie: {
+      maxAge: MILLIS_IN_A_WEEK,
+    },
   })
 );
 
