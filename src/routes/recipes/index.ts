@@ -5,6 +5,7 @@
 import express, { Response } from "express";
 import { Collection } from "../../model/Collection";
 import { Recipe } from "../../model/Recipe";
+import { RecipeTake } from "../../model/RecipeTake";
 import { User } from "../../model/User";
 import { CustomRequest, ErrorResponse } from "../../utils/types";
 import {
@@ -113,14 +114,21 @@ recipeRouter.post(
       });
     }
 
+    // Create a new recipe
     const newRecipe = new Recipe();
     newRecipe.recipeId = id;
     newRecipe.name = name;
     newRecipe.collection = parentCollection;
     newRecipe.isPrivate = isPrivate;
     newRecipe.recipeType = type;
-
     await newRecipe.save();
+
+    // Create an initial recipe take
+    const initialTake = new RecipeTake();
+    initialTake.name = "Take 1";
+    initialTake.takeNumber = 1;
+
+    await initialTake.save();
 
     return res.status(200).json({ success: true, id });
   }
