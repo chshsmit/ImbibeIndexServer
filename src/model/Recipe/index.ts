@@ -1,5 +1,13 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from "typeorm";
 import { Collection } from "../Collection";
+import { RecipeTake } from "../RecipeTake";
 
 @Entity()
 export class Recipe extends BaseEntity {
@@ -17,4 +25,7 @@ export class Recipe extends BaseEntity {
 
   @ManyToOne(() => Collection, (collection) => collection.recipes)
   collection: Collection;
+
+  @OneToMany(() => RecipeTake, (recipeTake) => recipeTake.recipe)
+  takes: RecipeTake[];
 }
