@@ -26,6 +26,9 @@ export class RecipeTake extends BaseEntity {
   @Column("boolean", { default: false })
   isPublished: boolean;
 
+  @Column("text", { nullable: true })
+  takeNotes: string;
+
   @OneToMany(
     () => TakeIngredients,
     (takeIngredients) => takeIngredients.recipeTake

@@ -18,8 +18,8 @@ export class TakeIngredients extends BaseEntity {
   @Column("text")
   ingredientUnit: string;
 
-  @Column("decimal")
-  ingredientAmount: number;
+  @Column("text")
+  ingredientAmount: string;
 
   // We can use a recipe that we have for simple syrup for example
   @Column("text", { nullable: true })
