@@ -36,7 +36,12 @@ recipeRouter.get(
 
     const recipe = await Recipe.findOne({
       where: { recipeId: req.params.recipeId },
-      relations: ["collection", "collection.user"],
+      relations: [
+        "collection",
+        "collection.user",
+        "takes",
+        "takes.ingredients",
+      ],
     });
 
     if (!recipe)
@@ -59,13 +64,8 @@ recipeRouter.get(
     }
 
     // Desctructuring for Response
-    const { recipeId, name } = recipe;
-    const { id: collectionId } = recipe.collection;
-
     return res.status(200).json({
-      recipeId,
-      name,
-      collectionId,
+      recipe,
     });
   }
 );
@@ -127,6 +127,7 @@ recipeRouter.post(
     const initialTake = new RecipeTake();
     initialTake.name = "Take 1";
     initialTake.takeNumber = 1;
+    initialTake.recipe = newRecipe;
 
     await initialTake.save();
 

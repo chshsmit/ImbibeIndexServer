@@ -21,7 +21,7 @@ export class User extends BaseEntity {
   @Column("text")
   email: string;
 
-  @Column("text", { default: "testingForNow" })
+  @Column("text", { default: "testingForNow", select: false })
   hashedPassword: string;
 
   @OneToMany(() => Collection, (collectionEntry) => collectionEntry.user)

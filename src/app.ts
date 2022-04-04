@@ -72,15 +72,6 @@ app.use("/user", userRouter);
 app.use("/recipes", recipeRouter);
 app.use("/collections", collectionsRouter);
 
-// app.get("/user", async (req, res) => {
-//   const user = (await req.user) as User;
-
-//   if (!user) res.send("");
-
-//   const { email, firstName, lastName } = user;
-//   res.send({ email, firstName, lastName });
-// });
-
 //------------------------------------------------------------------------------------
 // Sockets
 //------------------------------------------------------------------------------------

@@ -1,12 +1,9 @@
 //---------------------------------------------------------------
-// Single Recipe
-// GET /:recipeId
-//---------------------------------------------------------------
+
+import { Recipe } from "../../model/Recipe";
 
 export interface RecipeResponse {
-  recipeId: string;
-  name: string;
-  collectionId: string;
+  recipe: Recipe;
 }
 
 //---------------------------------------------------------------

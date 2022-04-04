@@ -6,7 +6,11 @@ import { User } from "../../model/User";
 export const localPassportConfig = (passport: PassportStatic) => {
   passport.use(
     new localStrategy(async (username, password, done) => {
-      const user = await User.findOne({ where: { email: username } });
+      const user = await User.findOne({
+        where: { email: username },
+        select: ["id", "firstName", "lastName", "email", "hashedPassword"],
+      });
+      console.log(user);
 
       if (!user) return done(null, false);
 

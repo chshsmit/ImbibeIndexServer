@@ -23,6 +23,9 @@ export class Recipe extends BaseEntity {
   @Column("text", { default: "cocktail" })
   recipeType: "cocktail" | "syrup" | "liqueur" | "other";
 
+  @Column("text", { nullable: true })
+  notes: string;
+
   @ManyToOne(() => Collection, (collection) => collection.recipes)
   collection: Collection;
 
