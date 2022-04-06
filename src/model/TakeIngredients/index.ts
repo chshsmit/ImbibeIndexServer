@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { Ingredient } from "../Ingredients";
 import { RecipeTake } from "../RecipeTake";
 
 @Entity()
@@ -13,18 +14,11 @@ export class TakeIngredients extends BaseEntity {
   id: number;
 
   @Column("text")
-  ingredientName: string;
-
-  @Column("text")
-  ingredientUnit: string;
-
-  @Column("text")
   ingredientAmount: string;
-
-  // We can use a recipe that we have for simple syrup for example
-  @Column("text", { nullable: true })
-  ingredientRecipeId?: string;
 
   @ManyToOne(() => RecipeTake, (recipeTake) => recipeTake.ingredients)
   recipeTake: RecipeTake;
+
+  @ManyToOne(() => Ingredient)
+  ingredient: Ingredient;
 }

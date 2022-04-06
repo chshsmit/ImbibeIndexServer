@@ -9,6 +9,7 @@ import "reflect-metadata";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import authenticationRouter from "./routes/authentication";
 import collectionsRouter from "./routes/collections";
+import ingredientsRouter from "./routes/ingredients";
 import recipeRouter from "./routes/recipes";
 import userRouter from "./routes/user";
 import { AppDataSource } from "./utils/Database";
@@ -71,6 +72,7 @@ app.use("/auth", authenticationRouter);
 app.use("/user", userRouter);
 app.use("/recipes", recipeRouter);
 app.use("/collections", collectionsRouter);
+app.use("/ingredients", ingredientsRouter);
 
 //------------------------------------------------------------------------------------
 // Sockets

@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Collection } from "../Collection";
+import { Ingredient } from "../Ingredients";
 
 @Entity()
 export class User extends BaseEntity {
@@ -26,4 +27,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Collection, (collectionEntry) => collectionEntry.user)
   collections: Collection[];
+
+  @OneToMany(() => Ingredient, (ingredient) => ingredient.user)
+  ingredients: Ingredient[];
 }
