@@ -25,15 +25,11 @@ const ingredientsRouter = express.Router();
 ingredientsRouter.get(
   "/:userId",
   async (req, res: Response<GetUserIngredientsResponse>) => {
-    const ingredients = await Ingredient.find({
+    const userIngredients = await Ingredient.find({
       where: { user: { id: Number(req.params.userId) } },
     });
 
-    const allIngredientNames = ingredients.map(
-      (ingredient) => ingredient.ingredientName
-    );
-
-    return res.status(200).json({ userIngredients: allIngredientNames });
+    return res.status(200).json({ userIngredients });
   }
 );
 
@@ -69,17 +65,11 @@ ingredientsRouter.post(
 
     await newIngredient.save();
 
-    const ingredients = await Ingredient.find({
+    const userIngredients = await Ingredient.find({
       where: { user: { id: userId } },
     });
 
-    const allIngredientNames = ingredients.map(
-      (ingredient) => ingredient.ingredientName
-    );
-
-    return res
-      .status(200)
-      .json({ success: true, userIngredients: allIngredientNames });
+    return res.status(200).json({ success: true, userIngredients });
   }
 );
 
