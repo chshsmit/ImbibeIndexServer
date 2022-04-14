@@ -21,7 +21,7 @@ export class Recipe extends BaseEntity {
   name: string;
 
   @Column("text", { default: "cocktail" })
-  recipeType: "cocktail" | "syrup" | "liqueur" | "other";
+  recipeType: "cocktail" | "ingredient";
 
   @Column("text", { nullable: true })
   notes: string;

@@ -4,6 +4,7 @@
 
 import express, { Response } from "express";
 import { Collection } from "../../model/Collection";
+import { Ingredient } from "../../model/Ingredients";
 import { Recipe } from "../../model/Recipe";
 import { RecipeTake } from "../../model/RecipeTake";
 import { User } from "../../model/User";
@@ -90,7 +91,7 @@ recipeRouter.post(
       });
     }
 
-    const { id, name, parentId, isPrivate, type } = req.body;
+    const { id, name, parentId, isPrivate, type, ingredientId } = req.body;
 
     const parentCollection = await Collection.findOne({
       where: { id: parentId },
@@ -128,8 +129,28 @@ recipeRouter.post(
     initialTake.name = "Take 1";
     initialTake.takeNumber = 1;
     initialTake.recipe = newRecipe;
-
     await initialTake.save();
+
+    // Create the ingredient if it is an ingredient recipe
+    if (type === "ingredient") {
+      const newIngredient = new Ingredient();
+      newIngredient.ingredientName = name;
+      newIngredient.ingredientRecipeId = id;
+      newIngredient.user = user;
+      await newIngredient.save();
+    }
+
+    // If we are creating a recipe from an existing ingredient
+    // Then we need to update it
+    if (ingredientId) {
+      const ingredient = await Ingredient.findOne({
+        where: { id: ingredientId },
+      });
+      if (ingredient) {
+        ingredient.ingredientRecipeId = id;
+        await ingredient.save();
+      }
+    }
 
     return res.status(200).json({ success: true, id });
   }
