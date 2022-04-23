@@ -7,12 +7,15 @@ import { Collection } from "../../model/Collection";
 import { Ingredient } from "../../model/Ingredients";
 import { Recipe } from "../../model/Recipe";
 import { RecipeTake } from "../../model/RecipeTake";
+import { TakeIngredients } from "../../model/TakeIngredients";
 import { User } from "../../model/User";
 import { CustomRequest, ErrorResponse } from "../../utils/types";
 import {
   CreateRecipeRequest,
   CreateRecipeResponse,
   RecipeResponse,
+  UpdateTakeRequest,
+  UpdateTakeResponse,
 } from "./types";
 
 // ----------------------------------------------------
@@ -42,6 +45,7 @@ recipeRouter.get(
         "collection.user",
         "takes",
         "takes.ingredients",
+        "takes.ingredients.ingredient",
       ],
     });
 
@@ -68,6 +72,80 @@ recipeRouter.get(
     return res.status(200).json({
       recipe,
     });
+  }
+);
+
+// ----------------------------------------------------
+
+/**
+ * Update a recipe's takes
+ */
+recipeRouter.put(
+  "/take/:takeId",
+  async (
+    req: CustomRequest<UpdateTakeRequest>,
+    res: Response<UpdateTakeResponse | ErrorResponse>
+  ) => {
+    const requestUser = (await req.user) as User;
+
+    if (
+      requestUser === undefined
+      // requestUser.id !== Number(req.params.userId)
+    ) {
+      return res.status(401).json({
+        errorCode: "UnauthorizedAccess",
+        message: "Sorry, you must be the user provided to create this recipe.",
+      });
+    }
+
+    const { takeNotes, ingredients } = req.body;
+
+    const recipeTake = await RecipeTake.findOne({
+      where: { id: Number(req.params.takeId) },
+      relations: ["ingredients"],
+    });
+    if (!recipeTake) {
+      return res.status(404).json({
+        errorCode: "TakeDoesNotExist",
+        message: "Sorry we did not find a take with that id.",
+      });
+    }
+
+    if (takeNotes) recipeTake.takeNotes = takeNotes;
+
+    await recipeTake.save();
+
+    if (ingredients) {
+      // delete current ingredients
+      const idsToDelete = recipeTake.ingredients.map(
+        (ingredient) => ingredient.id
+      );
+
+      if (idsToDelete.length > 0) await TakeIngredients.delete(idsToDelete);
+
+      const valsToSave = await Promise.all(
+        ingredients.map(async (item) => {
+          const ingredient = await Ingredient.findOne({
+            where: { id: item.ingredientId },
+          });
+          if (!ingredient) throw new Error("Ingredient doesn't exist");
+
+          const newTakeIngredient = new TakeIngredients();
+          newTakeIngredient.ingredientAmount = item.ingredientAmount;
+          newTakeIngredient.unit = item.ingredientUnit;
+          newTakeIngredient.ingredient = ingredient;
+          newTakeIngredient.recipeTake = recipeTake;
+
+          return newTakeIngredient;
+        })
+      );
+
+      console.log({ valsToSave });
+
+      await TakeIngredients.save(valsToSave);
+    }
+
+    return res.status(200).json({ takeNotes });
   }
 );
 

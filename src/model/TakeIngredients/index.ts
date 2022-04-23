@@ -16,6 +16,9 @@ export class TakeIngredients extends BaseEntity {
   @Column("text")
   ingredientAmount: string;
 
+  @Column("text")
+  unit: string;
+
   @ManyToOne(() => RecipeTake, (recipeTake) => recipeTake.ingredients)
   recipeTake: RecipeTake;
 
