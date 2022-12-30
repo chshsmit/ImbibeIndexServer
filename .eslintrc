@@ -1,0 +1,46 @@
+{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+
+    "parser": "@typescript-eslint/parser",
+
+    "parserOptions": {
+      "ecmaVersion": 2020,
+
+      "ecmaFeatures": {
+        "jsx": true,
+
+        "es6": true
+      },
+
+      "sourceType": "module"
+    },
+
+    "plugins": [],
+
+    "env": {
+      "browser": true,
+
+      "node": true,
+
+      "jest": true,
+
+      "es6": true
+    },
+
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+
+      // Spacing
+      "no-multi-spaces": "warn",
+
+      // Ignore console.log errors
+      "no-console": "off",
+
+      // Semi colons
+      "semi": ["warn", "always"]
+    }
+  }
