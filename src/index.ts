@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import UserRouter from "./routes/user";
+import UserRouter from "./routes/user/routes";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+import errorHandler from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -21,6 +22,9 @@ app.listen(port, () => {
 });
 
 app.use("/user", UserRouter);
+app.use(errorHandler);
+
+console.log(process.env.NODE_ENV);
 
 mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGO_DB_CONNECTION_URI!).then(() => {
