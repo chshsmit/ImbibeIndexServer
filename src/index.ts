@@ -4,12 +4,14 @@ import UserRouter from "./routes/user/routes";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import errorHandler from "./middleware/errorHandler";
+import cors from "cors";
 
 dotenv.config();
 
 const app: Express = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 const port = process.env.PORT || 5500;
 

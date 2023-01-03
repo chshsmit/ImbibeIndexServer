@@ -11,15 +11,18 @@ export const registerUser = asyncHandler(async (req: RegisterRequest, res) => {
     throw new Error("Please add all required fields");
   }
 
+  console.log(req.body);
+  console.log(typeof password);
+
   // Check if user exists
   const userExists = await User.findOne({ email });
   if (userExists) {
-    res.status(400).json("User exists");
-    throw new Error("User already exists");
+    res.status(400);
+    throw new Error("A user already exists with that email");
   }
 
   // Hash Password
-  const hashedPassword = AuthUtils.hash(password);
+  const hashedPassword = await AuthUtils.hash(password);
 
   // Create the user
   const user = await User.create({
@@ -31,7 +34,7 @@ export const registerUser = asyncHandler(async (req: RegisterRequest, res) => {
 
   if (user) {
     res.status(201).json({
-      _id: user.id,
+      id: user.id,
       name: user.name,
       email: user.email,
       displayName: user.displayName,
@@ -51,7 +54,7 @@ export const loginUser = asyncHandler(async (req: LoginRequest, res) => {
 
   if (user && (await AuthUtils.passwordsAreEqual(password, user.password))) {
     res.json({
-      _id: user.id,
+      id: user.id,
       name: user.name,
       email: user.email,
       displayName: user.displayName,
