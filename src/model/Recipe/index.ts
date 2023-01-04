@@ -22,6 +22,16 @@ const RecipeSchema = new Schema(
         ref: ModelName.RecipeTake,
       },
     ],
+    collectionForRecipe: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: ModelName.Collection,
+    },
+    tags: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

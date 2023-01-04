@@ -16,6 +16,11 @@ const CollectionSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    parentCollection: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: ModelName.Collection,
+    },
     collections: [
       {
         type: Schema.Types.ObjectId,
