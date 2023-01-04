@@ -22,6 +22,12 @@ const CollectionSchema = new Schema(
         ref: ModelName.Collection,
       },
     ],
+    recipes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: ModelName.Recipe,
+      },
+    ],
   },
   { timestamps: true }
 );
