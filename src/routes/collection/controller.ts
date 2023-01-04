@@ -2,6 +2,27 @@ import asyncHandler from "express-async-handler";
 import Collection from "../../model/Collection";
 import { CreateCollectionRequest } from "./types";
 
+export const getRootCollectionForUser = asyncHandler(async (req, res) => {
+  const collections = await Collection.findOne({
+    user: req.user.id,
+    isRootCollection: true,
+  })
+    .select("_id collectionName isRootCollection")
+    .populate({
+      path: "recipes",
+      select: "_id name tags",
+    })
+    .populate({
+      path: "collections",
+      select: "_id collectionName",
+      populate: {
+        path: "recipes collections",
+        select: "recipes._id name tags collections._id collectionName",
+      },
+    });
+  res.status(200).json(collections);
+});
+
 export const createCollection = asyncHandler(
   async (req: CreateCollectionRequest, res) => {
     const { name, parentCollectionId } = req.body;
