@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import UserRouter from "./routes/user/routes";
+import RecipeRouter from "./routes/recipe/routes";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import errorHandler from "./middleware/errorHandler";
@@ -24,6 +25,7 @@ app.listen(port, () => {
 });
 
 app.use("/user", UserRouter);
+app.use("/recipe", RecipeRouter);
 app.use(errorHandler);
 
 console.log(process.env.NODE_ENV);
