@@ -2,6 +2,7 @@ import User from "../../model/User";
 import asyncHandler from "express-async-handler";
 import AuthUtils from "../../utils/AuthUtils";
 import { LoginRequest, RegisterRequest } from "./types";
+import Collection from "../../model/Collection";
 
 export const registerUser = asyncHandler(async (req: RegisterRequest, res) => {
   const { name, email, displayName, password } = req.body;
@@ -33,6 +34,15 @@ export const registerUser = asyncHandler(async (req: RegisterRequest, res) => {
   });
 
   if (user) {
+    // Let's create their root collection
+    await Collection.create({
+      user: user.id,
+      collectionName: "Home",
+      isRootCollection: true,
+      collections: [],
+      recipes: [],
+    });
+
     res.status(201).json({
       id: user.id,
       name: user.name,
