@@ -37,5 +37,12 @@ const CollectionSchema = new Schema(
   { timestamps: true }
 );
 
+// We want it to use id instead of _id
+CollectionSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+CollectionSchema.set("toJSON", { virtuals: true });
+
 const Collection = mongoose.model(ModelName.Collection, CollectionSchema);
 export default Collection;

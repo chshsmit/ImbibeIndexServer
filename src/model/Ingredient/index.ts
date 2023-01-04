@@ -16,5 +16,12 @@ const IngredientSchema = new Schema(
   { timestamps: true }
 );
 
+// We want it to use id instead of _id
+IngredientSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+IngredientSchema.set("toJSON", { virtuals: true });
+
 const Ingredient = mongoose.model(ModelName.Ingredient, IngredientSchema);
 export default Ingredient;

@@ -24,5 +24,12 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
+// We want it to use id instead of _id
+UserSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+UserSchema.set("toJSON", { virtuals: true });
+
 const User = mongoose.model(ModelName.User, UserSchema);
 export default User;

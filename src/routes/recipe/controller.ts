@@ -1,10 +1,14 @@
 import asyncHandler from "express-async-handler";
-import { CreateRecipeRequest } from "./types";
+import {
+  CreateRecipeRequest,
+  CreateRecipeResponse,
+  GetRecipeResponse,
+} from "./types";
 import Recipe from "../../model/Recipe";
 import Collection from "../../model/Collection";
 
 export const createRecipe = asyncHandler(
-  async (req: CreateRecipeRequest, res) => {
+  async (req: CreateRecipeRequest, res: CreateRecipeResponse) => {
     const { name, isPrivate, collectionId } = req.body;
 
     if (!name) {
@@ -43,7 +47,6 @@ export const createRecipe = asyncHandler(
       res.status(201).json({
         id: recipe.id,
         name: recipe.name,
-        takes: recipe.takes,
       });
     } else {
       res.status(400);
@@ -57,25 +60,27 @@ interface UserForRecipe {
   displayName: string;
 }
 
-export const getRecipeById = asyncHandler(async (req, res) => {
-  // res.json({ message: `Getting recipe with id ${req.params.id}` });
-  const recipe = await Recipe.findById(req.params.id).populate<{
-    user: UserForRecipe;
-  }>("user", "name displayName");
+export const getRecipeById = asyncHandler(
+  async (req, res: GetRecipeResponse) => {
+    // res.json({ message: `Getting recipe with id ${req.params.id}` });
+    const recipe = await Recipe.findById(req.params.id).populate<{
+      user: UserForRecipe;
+    }>("user", "name displayName");
 
-  if (!recipe) {
-    res.status(404);
-    throw new Error(`Recipe with id ${req.params.id} was not found`);
+    if (!recipe) {
+      res.status(404);
+      throw new Error(`Recipe with id ${req.params.id} was not found`);
+    }
+
+    console.log(recipe);
+
+    res.status(200).json({
+      name: recipe.name,
+      createdAt: recipe.createdAt,
+      createdBy: {
+        name: recipe.user.name,
+        displayName: recipe.user.displayName,
+      },
+    });
   }
-
-  console.log(recipe);
-
-  res.status(200).json({
-    name: recipe.name,
-    createdAt: recipe.createdAt,
-    createdBy: {
-      name: recipe.user.name,
-      displayName: recipe.user.displayName,
-    },
-  });
-});
+);

@@ -3,6 +3,10 @@ import {
   CustomResponse,
 } from "../../types/Requests/CustomRequest";
 
+//--------------------------------------------------------------------------------
+// Register
+//--------------------------------------------------------------------------------
+
 interface RegisterBody {
   name: string;
   email: string;
@@ -20,6 +24,10 @@ interface RegisterResponseData {
 }
 export type RegisterResponse = CustomResponse<RegisterResponseData>;
 
+//--------------------------------------------------------------------------------
+// Login
+//--------------------------------------------------------------------------------
+
 interface LoginBody {
   email: string;
   password: string;
@@ -34,6 +42,10 @@ interface LoginResponseData {
   token: string;
 }
 export type LoginResponse = CustomResponse<LoginResponseData>;
+
+//--------------------------------------------------------------------------------
+// Get self
+//--------------------------------------------------------------------------------
 
 interface GetSelfResponseData {
   id: string;

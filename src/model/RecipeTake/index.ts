@@ -22,5 +22,12 @@ const RecipeTakeSchema = new Schema(
   { timestamps: true }
 );
 
+// We want it to use id instead of _id
+RecipeTakeSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+RecipeTakeSchema.set("toJSON", { virtuals: true });
+
 const RecipeTake = mongoose.model(ModelName.RecipeTake, RecipeTakeSchema);
 export default RecipeTake;
