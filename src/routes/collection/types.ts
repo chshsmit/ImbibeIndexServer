@@ -26,25 +26,30 @@ export type CreateCollectionResponse =
 // Get collections for user
 //--------------------------------------------------------------------------------
 
-interface CollectionForUserRecipe {
+export interface CollectionForUserRecipe {
   name: string;
   tags: Array<string>;
   id: string;
 }
 
-interface SubCollection {
+export interface SubCollection {
   collectionName: string;
-  collections: Array<SubCollection>;
+  id: string;
+}
+
+export interface CollectionForUser {
+  collectionName: string;
+  id: string;
+  isRootCollection: boolean;
+  parentCollection?: string;
+  subCollections: Array<SubCollection>;
   recipes: Array<CollectionForUserRecipe>;
 }
 
-export interface GetCollectionsForUserResponseData {
-  id: string;
-  collectionName: string;
-  isRootCollection: boolean;
-  collections: Array<SubCollection>;
-  recipes: Array<CollectionForUserRecipe>;
+interface GetCollectionsForUserData {
+  collections: Record<string, CollectionForUser>;
+  rootCollectionId: string;
 }
 
 export type GetCollectionsForUserResponse =
-  CustomResponse<GetCollectionsForUserResponseData>;
+  CustomResponse<GetCollectionsForUserData>;

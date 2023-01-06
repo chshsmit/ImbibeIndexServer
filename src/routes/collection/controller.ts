@@ -1,33 +1,47 @@
 import asyncHandler from "express-async-handler";
 import Collection from "../../model/Collection";
 import {
+  CollectionForUser,
+  CollectionForUserRecipe,
   CreateCollectionRequest,
   CreateCollectionResponse,
   GetCollectionsForUserResponse,
-  GetCollectionsForUserResponseData,
+  SubCollection,
 } from "./types";
 
 export const getRootCollectionForUser = asyncHandler(
   async (req, res: GetCollectionsForUserResponse) => {
-    const collections = (await Collection.findOne({
-      user: req.user.id,
-      isRootCollection: true,
-    })
-      .select("_id collectionName isRootCollection")
-      .populate({
+    const userCollections = await Collection.find({ user: req.user.id })
+      .populate<{ recipes: Array<CollectionForUserRecipe> }>({
         path: "recipes",
         select: "_id name tags",
       })
-      .populate({
+      .populate<{ collections: Array<SubCollection> }>({
         path: "collections",
         select: "_id collectionName",
-        populate: {
-          path: "recipes collections",
-          select: "recipes._id name tags collections._id collectionName",
-        },
-      })) as GetCollectionsForUserResponseData;
+      });
 
-    res.status(200).json(collections);
+    const collections: Record<string, CollectionForUser> = {};
+    let rootCollectionId = "";
+    userCollections.forEach((collection) => {
+      if (collection.isRootCollection) {
+        rootCollectionId = collection.id;
+      }
+      const collectionForUser = {
+        collectionName: collection.collectionName,
+        id: collection.id,
+        isRootCollection: collection.isRootCollection,
+        subCollections: collection.collections,
+        parentCollection: collection.parentCollection?.toString(),
+        recipes: collection.recipes,
+      };
+      collections[collection.id] = collectionForUser;
+    });
+
+    res.status(200).json({
+      collections,
+      rootCollectionId,
+    });
   }
 );
 
