@@ -3,9 +3,11 @@ import {
   CreateRecipeRequest,
   CreateRecipeResponse,
   GetRecipeResponse,
+  TakeForRecipeResponse,
 } from "./types";
 import Recipe from "../../model/Recipe";
 import Collection from "../../model/Collection";
+import RecipeTake from "../../model/RecipeTake";
 
 export const createRecipe = asyncHandler(
   async (req: CreateRecipeRequest, res: CreateRecipeResponse) => {
@@ -33,11 +35,19 @@ export const createRecipe = asyncHandler(
       );
     }
 
+    // Lets create the first take right away
+    const firstTake = await RecipeTake.create({
+      user: req.user.id,
+      takeNumber: 1,
+      ingredients: [],
+    });
+
     const recipe = await Recipe.create({
       name,
       user: req.user.id,
       isPrivate: isPrivate === "Y",
       collectionForRecipe: collectionForRecipe.id,
+      takes: [firstTake.id],
     });
 
     if (recipe) {
@@ -58,29 +68,39 @@ export const createRecipe = asyncHandler(
 interface UserForRecipe {
   name: string;
   displayName: string;
+  id: string;
 }
 
 export const getRecipeById = asyncHandler(
   async (req, res: GetRecipeResponse) => {
     // res.json({ message: `Getting recipe with id ${req.params.id}` });
-    const recipe = await Recipe.findById(req.params.id).populate<{
-      user: UserForRecipe;
-    }>("user", "name displayName");
+    const recipe = await Recipe.findById(req.params.id)
+      .populate<{
+        user: UserForRecipe;
+      }>("user", "name displayName id")
+      .populate<{
+        takes: Array<TakeForRecipeResponse>;
+      }>({
+        path: "takes",
+        select: "id takeNumber ingredients",
+      });
 
     if (!recipe) {
       res.status(404);
       throw new Error(`Recipe with id ${req.params.id} was not found`);
     }
 
-    console.log(recipe);
+    console.log({ recipe });
+    console.log(recipe.takes);
 
     res.status(200).json({
       name: recipe.name,
       createdAt: recipe.createdAt,
       createdBy: {
-        name: recipe.user.name,
         displayName: recipe.user.displayName,
+        id: recipe.user.id,
       },
+      takes: recipe.takes,
     });
   }
 );

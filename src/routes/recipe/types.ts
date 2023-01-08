@@ -24,12 +24,21 @@ export type CreateRecipeResponse = CustomResponse<CreateRecipeResponseData>;
 // Get a specific recipe
 //--------------------------------------------------------------------------------
 
+export interface TakeForRecipeResponse {
+  id: string;
+  takeNumber: number;
+  ingredients: Array<any>;
+}
+// interface RecipeTake {}
+
 interface GetRecipeResponseData {
   name: string;
   createdAt: NativeDate | Date;
   createdBy: {
-    name: string;
     displayName: string;
+    id: string;
   };
+  takes: Array<TakeForRecipeResponse>;
+  // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;
