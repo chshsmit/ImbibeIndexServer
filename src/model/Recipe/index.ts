@@ -16,6 +16,10 @@ const RecipeSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    recipeDescription: {
+      type: String,
+      required: false,
+    },
     takes: [
       {
         type: Schema.Types.ObjectId,

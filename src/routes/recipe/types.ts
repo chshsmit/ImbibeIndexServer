@@ -39,6 +39,7 @@ interface GetRecipeResponseData {
     id: string;
   };
   takes: Array<TakeForRecipeResponse>;
+  recipeDescription?: string;
   // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

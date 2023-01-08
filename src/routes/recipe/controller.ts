@@ -95,12 +95,13 @@ export const getRecipeById = asyncHandler(
 
     res.status(200).json({
       name: recipe.name,
-      createdAt: recipe.createdAt,
+      takes: recipe.takes,
+      recipeDescription: recipe.recipeDescription,
       createdBy: {
         displayName: recipe.user.displayName,
         id: recipe.user.id,
       },
-      takes: recipe.takes,
+      createdAt: recipe.createdAt,
     });
   }
 );
