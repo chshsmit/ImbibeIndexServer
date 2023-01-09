@@ -4,6 +4,8 @@ import {
   CreateRecipeResponse,
   GetRecipeResponse,
   TakeForRecipeResponse,
+  UpdateRecipeRequest,
+  UpdateRecipeResponse,
 } from "./types";
 import Recipe from "../../model/Recipe";
 import Collection from "../../model/Collection";
@@ -65,6 +67,34 @@ export const createRecipe = asyncHandler(
   }
 );
 
+export const updateRecipe = asyncHandler(
+  async (req: UpdateRecipeRequest, res: UpdateRecipeResponse) => {
+    const recipe = await Recipe.findById(req.params.id);
+
+    if (!recipe) {
+      res.status(404);
+      throw new Error(`No recipe found with id: ${req.params.id}`);
+    }
+
+    if (recipe.user.toString() !== req.user.id) {
+      res.status(404);
+      console.error("Unauthorized access");
+      throw new Error("We did not find this recipe sorry");
+    }
+
+    await recipe.updateOne({
+      ...req.body,
+    });
+
+    res.status(200).json({
+      message: "Successfully updated recipe",
+    });
+  }
+);
+
+// --------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
+
 interface UserForRecipe {
   name: string;
   displayName: string;
@@ -89,9 +119,6 @@ export const getRecipeById = asyncHandler(
       res.status(404);
       throw new Error(`Recipe with id ${req.params.id} was not found`);
     }
-
-    console.log({ recipe });
-    console.log(recipe.takes);
 
     res.status(200).json({
       name: recipe.name,

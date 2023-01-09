@@ -21,6 +21,21 @@ interface CreateRecipeResponseData {
 export type CreateRecipeResponse = CustomResponse<CreateRecipeResponseData>;
 
 //--------------------------------------------------------------------------------
+// Update a Recipe
+//--------------------------------------------------------------------------------
+
+interface UpdateRecipeBody {
+  name?: string;
+  recipeDescription?: string;
+}
+export type UpdateRecipeRequest = CustomRequest<UpdateRecipeBody>;
+
+interface UpdateRecipeResponseData {
+  message: string;
+}
+export type UpdateRecipeResponse = CustomResponse<UpdateRecipeResponseData>;
+
+//--------------------------------------------------------------------------------
 // Get a specific recipe
 //--------------------------------------------------------------------------------
 
