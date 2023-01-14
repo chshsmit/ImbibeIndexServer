@@ -122,8 +122,6 @@ export const getRecipeById = asyncHandler(
       throw new Error(`Recipe with id ${req.params.id} was not found`);
     }
 
-    console.log(req.user);
-
     let isEditable = false;
     if (req.user && req.user.id === recipe.user.id) isEditable = true;
 
@@ -137,6 +135,7 @@ export const getRecipeById = asyncHandler(
       },
       createdAt: recipe.createdAt,
       isEditable,
+      tags: recipe.tags,
     });
   }
 );

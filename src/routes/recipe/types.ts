@@ -56,6 +56,7 @@ interface GetRecipeResponseData {
   takes: Array<TakeForRecipeResponse>;
   recipeDescription?: string;
   isEditable: boolean;
+  tags: Array<string>;
   // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;
