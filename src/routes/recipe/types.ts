@@ -46,6 +46,11 @@ export interface TakeForRecipeResponse {
 }
 // interface RecipeTake {}
 
+export interface TagForRecipeReponse {
+  _id: string;
+  tagName: string;
+}
+
 interface GetRecipeResponseData {
   name: string;
   createdAt: NativeDate | Date;
@@ -56,7 +61,7 @@ interface GetRecipeResponseData {
   takes: Array<TakeForRecipeResponse>;
   recipeDescription?: string;
   isEditable: boolean;
-  tags: Array<string>;
+  tags: Array<{ id: string; tagName: string }>;
   // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

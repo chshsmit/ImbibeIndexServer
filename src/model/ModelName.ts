@@ -4,6 +4,7 @@ enum ModelName {
   Recipe = "Recipe",
   RecipeIngredient = "RecipeIngredient",
   RecipeTake = "RecipeTake",
+  Tag = "Tag",
   User = "User",
 }
 

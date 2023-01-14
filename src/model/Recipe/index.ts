@@ -33,7 +33,8 @@ const RecipeSchema = new Schema(
     },
     tags: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: ModelName.Tag,
       },
     ],
   },

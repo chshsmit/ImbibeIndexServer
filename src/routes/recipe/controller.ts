@@ -3,6 +3,7 @@ import {
   CreateRecipeRequest,
   CreateRecipeResponse,
   GetRecipeResponse,
+  TagForRecipeReponse,
   TakeForRecipeResponse,
   UpdateRecipeRequest,
   UpdateRecipeResponse,
@@ -113,9 +114,11 @@ export const getRecipeById = asyncHandler(
       }>({
         path: "takes",
         select: "id takeNumber ingredients",
+      })
+      .populate<{ tags: Array<TagForRecipeReponse> }>({
+        path: "tags",
+        select: "_id tagName",
       });
-
-    console.log(req.user);
 
     if (!recipe) {
       res.status(404);
@@ -135,7 +138,9 @@ export const getRecipeById = asyncHandler(
       },
       createdAt: recipe.createdAt,
       isEditable,
-      tags: recipe.tags,
+      tags: recipe.tags.map((tag) => {
+        return { id: tag._id, tagName: tag.tagName };
+      }),
     });
   }
 );
