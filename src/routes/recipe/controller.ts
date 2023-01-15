@@ -113,7 +113,14 @@ export const getRecipeById = asyncHandler(
         takes: Array<TakeForRecipeResponse>;
       }>({
         path: "takes",
-        select: "id takeNumber ingredients",
+        select: "id takeNumber steps takeNotes",
+        populate: {
+          path: "ingredients",
+          populate: {
+            path: "ingredient",
+            select: "name",
+          },
+        },
       })
       .populate<{ tags: Array<TagForRecipeReponse> }>({
         path: "tags",

@@ -14,10 +14,25 @@ const RecipeTakeSchema = new Schema(
     },
     ingredients: [
       {
-        type: Schema.Types.ObjectId,
-        ref: ModelName.RecipeIngredient,
+        type: {
+          ingredient: {
+            type: Schema.Types.ObjectId,
+            ref: ModelName.Ingredient,
+          },
+          amount: Number,
+          unit: String,
+        },
       },
     ],
+    steps: [
+      {
+        type: { order: Number, stepText: String },
+      },
+    ],
+    takeNotes: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );

@@ -41,10 +41,23 @@ export type UpdateRecipeResponse = CustomResponse<UpdateRecipeResponseData>;
 // Get a specific recipe
 //--------------------------------------------------------------------------------
 
+interface TakeStep {
+  order: number;
+  stepText: string;
+}
+
+interface TakeIngredient {
+  ingredient: { id: string; name: string };
+  amount: number;
+  unit: string;
+}
+
 export interface TakeForRecipeResponse {
   id: string;
   takeNumber: number;
-  ingredients: Array<any>;
+  ingredients: Array<TakeIngredient>;
+  steps: Array<TakeStep>;
+  takeNotes: string;
 }
 // interface RecipeTake {}
 
