@@ -12,6 +12,13 @@ import Recipe from "../../model/Recipe";
 import Collection from "../../model/Collection";
 import RecipeTake from "../../model/RecipeTake";
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /recipe
+ * @protected yes
+ */
 export const createRecipe = asyncHandler(
   async (req: CreateRecipeRequest, res: CreateRecipeResponse) => {
     const { name, isPrivate, collectionId } = req.body;
@@ -68,6 +75,13 @@ export const createRecipe = asyncHandler(
   }
 );
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method PATCH
+ * @route /recipe/:id
+ * @protected yes
+ */
 export const updateRecipe = asyncHandler(
   async (req: UpdateRecipeRequest, res: UpdateRecipeResponse) => {
     const recipe = await Recipe.findById(req.params.id);
@@ -102,9 +116,16 @@ interface UserForRecipe {
   id: string;
 }
 
+/**
+ * @method GET
+ * @route /recipe/:id
+ * @protected semi-protected
+ */
+
 export const getRecipeById = asyncHandler(
   async (req, res: GetRecipeResponse) => {
     // res.json({ message: `Getting recipe with id ${req.params.id}` });
+    // TODO: Implement PRIVATE recipe
     const recipe = await Recipe.findById(req.params.id)
       .populate<{
         user: UserForRecipe;

@@ -6,6 +6,13 @@ import {
   GetTagsResponse,
 } from "./types";
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /tags
+ * @protected no
+ */
 export const createTags = asyncHandler(
   async (req: CreateTagsRequest, res: CreateTagsResponse) => {
     const { tags } = req.body;
@@ -41,6 +48,13 @@ export const createTags = asyncHandler(
   }
 );
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method GET
+ * @route /tags
+ * @protected no
+ */
 export const getTags = asyncHandler(async (req, res: GetTagsResponse) => {
   const tags = await Tag.find();
 

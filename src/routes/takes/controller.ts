@@ -3,6 +3,13 @@ import Recipe from "../../model/Recipe";
 import RecipeTake from "../../model/RecipeTake";
 import { CreateTakeRequest } from "./types";
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method PATCH
+ * @route /takes/:takeId
+ * @protected yes
+ */
 export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
   const { steps, ingredients, takeNotes } = req.body;
 
@@ -40,6 +47,13 @@ export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
   res.status(201).json({ message: "updated" });
 });
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /takes/recipe/:recipeId
+ * @protected yes
+ */
 export const createTake = asyncHandler(async (req: CreateTakeRequest, res) => {
   const { takeNumber, steps, ingredients, takeNotes } = req.body;
 

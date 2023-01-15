@@ -10,6 +10,13 @@ import {
 } from "./types";
 import Collection from "../../model/Collection";
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /user/register
+ * @protected no
+ */
 export const registerUser = asyncHandler(
   async (req: RegisterRequest, res: RegisterResponse) => {
     const { name, email, displayName, password } = req.body;
@@ -61,6 +68,13 @@ export const registerUser = asyncHandler(
   }
 );
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /user/login
+ * @protected no
+ */
 export const loginUser = asyncHandler(
   async (req: LoginRequest, res: LoginResponse) => {
     const { email, password } = req.body;
@@ -83,6 +97,13 @@ export const loginUser = asyncHandler(
   }
 );
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method GET
+ * @route /user/me
+ * @protected yes
+ */
 export const getSelf = asyncHandler(async (req, res: GetSelfResponse) => {
   const user = await User.findById(req.user.id);
 

@@ -9,6 +9,13 @@ import {
   SubCollection,
 } from "./types";
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method GET
+ * @route /collection/user
+ * @protected yes
+ */
 export const getRootCollectionForUser = asyncHandler(
   async (req, res: GetCollectionsForUserResponse) => {
     const userCollections = await Collection.find({ user: req.user.id })
@@ -45,6 +52,13 @@ export const getRootCollectionForUser = asyncHandler(
   }
 );
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /collection
+ * @protected yes
+ */
 export const createCollection = asyncHandler(
   async (req: CreateCollectionRequest, res: CreateCollectionResponse) => {
     const { name, parentCollectionId } = req.body;

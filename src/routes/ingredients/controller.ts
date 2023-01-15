@@ -2,6 +2,14 @@ import asyncHandler from "express-async-handler";
 import Ingredient from "../../model/Ingredient";
 import { CreateIngredientRequest, CreateIngredientResponse } from "./types";
 
+//--------------------------------------------------------------------------------
+
+/**
+ * @method POST
+ * @route /ingredients
+ * @protected yes
+ */
+
 export const createIngredient = asyncHandler(
   async (req: CreateIngredientRequest, res: CreateIngredientResponse) => {
     const { name } = req.body;
