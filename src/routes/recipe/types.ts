@@ -27,6 +27,8 @@ export type CreateRecipeResponse = CustomResponse<CreateRecipeResponseData>;
 interface UpdateRecipeBody {
   name?: string;
   recipeDescription?: string;
+  tags?: Array<string>;
+  isPrivate?: boolean;
 }
 export type UpdateRecipeRequest = CustomRequest<UpdateRecipeBody>;
 
@@ -52,6 +54,7 @@ export interface TagForRecipeReponse {
 }
 
 interface GetRecipeResponseData {
+  id: string;
   name: string;
   createdAt: NativeDate | Date;
   createdBy: {

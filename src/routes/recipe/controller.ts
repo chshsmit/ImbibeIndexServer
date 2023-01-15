@@ -129,6 +129,7 @@ export const getRecipeById = asyncHandler(
     if (req.user && req.user.id === recipe.user.id) isEditable = true;
 
     res.status(200).json({
+      id: recipe.id,
       name: recipe.name,
       takes: recipe.takes,
       recipeDescription: recipe.recipeDescription,
