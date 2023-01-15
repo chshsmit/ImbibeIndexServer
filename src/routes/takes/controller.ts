@@ -3,6 +3,43 @@ import Recipe from "../../model/Recipe";
 import RecipeTake from "../../model/RecipeTake";
 import { CreateTakeRequest } from "./types";
 
+export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
+  const { steps, ingredients, takeNotes } = req.body;
+
+  const { takeId } = req.params;
+
+  const takeToUpdate = await RecipeTake.findById(takeId);
+
+  if (!takeToUpdate) {
+    res.status(404);
+    throw new Error("We did not find the take you are looking for");
+  }
+
+  if (takeToUpdate.user._id.toString() !== req.user.id) {
+    res.status(404);
+    throw new Error("We did not find the recipe you were looking for");
+  }
+
+  await takeToUpdate.updateOne({
+    steps: steps?.map((step) => {
+      return {
+        order: step.order,
+        stepText: step.stepText,
+      };
+    }),
+    ingredients: ingredients?.map((ingredient) => {
+      return {
+        amount: ingredient.amount,
+        unit: ingredient.unit,
+        ingredient: ingredient.ingredient.id,
+      };
+    }),
+    takeNotes: takeNotes,
+  });
+
+  res.status(201).json({ message: "updated" });
+});
+
 export const createTake = asyncHandler(async (req: CreateTakeRequest, res) => {
   const { takeNumber, steps, ingredients, takeNotes } = req.body;
 

@@ -1,6 +1,6 @@
 import { CustomRequest } from "../../types/Requests/CustomRequest";
 
-interface CreateTakeBody {
+interface CreateOrUpdateTakeBody {
   takeNumber: number;
   steps?: Array<{ order: number; stepText: string }>;
   ingredients?: Array<{
@@ -11,4 +11,4 @@ interface CreateTakeBody {
   takeNotes?: string;
 }
 
-export type CreateTakeRequest = CustomRequest<CreateTakeBody>;
+export type CreateTakeRequest = CustomRequest<CreateOrUpdateTakeBody>;
