@@ -14,10 +14,6 @@ const RecipeIngredientSchema = new Schema(
       ref: ModelName.Ingredient,
     },
     amount: {
-      type: Number,
-      required: true,
-    },
-    unit: {
       type: String,
       required: true,
     },

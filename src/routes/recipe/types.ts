@@ -48,8 +48,8 @@ interface TakeStep {
 
 interface TakeIngredient {
   ingredient: { id: string; name: string };
-  amount: number;
-  unit: string;
+  amount: string;
+  order: number;
 }
 
 export interface TakeForRecipeResponse {

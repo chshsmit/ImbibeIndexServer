@@ -37,7 +37,7 @@ export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
     ingredients: ingredients?.map((ingredient) => {
       return {
         amount: ingredient.amount,
-        unit: ingredient.unit,
+        order: ingredient.order,
         ingredient: ingredient.ingredient.id,
       };
     }),
@@ -88,7 +88,7 @@ export const createTake = asyncHandler(async (req: CreateTakeRequest, res) => {
       return {
         ingredient: ingredient.ingredient.id,
         amount: ingredient.amount,
-        unit: ingredient.unit,
+        order: ingredient.order,
       };
     }),
   });

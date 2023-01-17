@@ -3,6 +3,7 @@ import {
   CustomResponse,
 } from "../../types/Requests/CustomRequest";
 
+//--------------------------------------------------------------------------------
 interface CreateIngredientBody {
   name: string;
 }
@@ -13,3 +14,9 @@ interface CreateIngredientResponseData {
 }
 export type CreateIngredientResponse =
   CustomResponse<CreateIngredientResponseData>;
+
+//--------------------------------------------------------------------------------
+
+type IngredientsArray = Array<{ id: string; name: string }>;
+
+export type GetIngredientsResponse = CustomResponse<IngredientsArray>;

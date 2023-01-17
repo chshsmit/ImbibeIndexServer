@@ -5,7 +5,7 @@ const IngredientSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: false,
       ref: ModelName.User,
     },
     name: {

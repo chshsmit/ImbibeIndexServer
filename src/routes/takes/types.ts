@@ -4,8 +4,8 @@ interface CreateOrUpdateTakeBody {
   takeNumber: number;
   steps?: Array<{ order: number; stepText: string }>;
   ingredients?: Array<{
-    amount: number;
-    unit: string;
+    amount: string;
+    order: number;
     ingredient: { id: string };
   }>;
   takeNotes?: string;
