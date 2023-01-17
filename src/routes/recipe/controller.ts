@@ -1,4 +1,7 @@
 import asyncHandler from "express-async-handler";
+import Collection from "../../model/Collection";
+import Recipe from "../../model/Recipe";
+import RecipeTake from "../../model/RecipeTake";
 import {
   CreateRecipeRequest,
   CreateRecipeResponse,
@@ -8,9 +11,6 @@ import {
   UpdateRecipeRequest,
   UpdateRecipeResponse,
 } from "./types";
-import Recipe from "../../model/Recipe";
-import Collection from "../../model/Collection";
-import RecipeTake from "../../model/RecipeTake";
 
 //--------------------------------------------------------------------------------
 
@@ -135,13 +135,15 @@ export const getRecipeById = asyncHandler(
       }>({
         path: "takes",
         select: "id takeNumber steps takeNotes",
-        populate: {
-          path: "ingredients",
-          populate: {
-            path: "ingredient",
-            select: "name",
+        populate: [
+          {
+            path: "ingredients",
+            populate: {
+              path: "ingredient",
+              select: "name",
+            },
           },
-        },
+        ],
       })
       .populate<{ tags: Array<TagForRecipeReponse> }>({
         path: "tags",
@@ -155,6 +157,19 @@ export const getRecipeById = asyncHandler(
 
     let isEditable = false;
     if (req.user && req.user.id === recipe.user.id) isEditable = true;
+
+    // We want to delete a bunch of ids
+    // TODO: Figure out a more elegant solution for this
+    // recipe.takes.forEach((take) => {
+    //   take.ingredients.forEach((ingredient) => {
+    //     ingredient._id = undefined;
+    //   });
+    //   take.steps.forEach((step) => {
+    //     step._id = undefined;
+    //   });
+    // });
+
+    // console.log(JSON.stringify(recipe.takes));
 
     res.status(200).json({
       id: recipe.id,

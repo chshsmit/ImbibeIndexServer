@@ -1,6 +1,38 @@
 import mongoose, { Schema } from "mongoose";
 import ModelName from "../ModelName";
 
+const StepSchema = new Schema(
+  {
+    order: {
+      type: Number,
+      required: true,
+    },
+    stepText: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const IngredientSchema = new Schema(
+  {
+    ingredient: {
+      type: Schema.Types.ObjectId,
+      ref: ModelName.Ingredient,
+    },
+    amount: {
+      type: String,
+      required: true,
+    },
+    order: {
+      type: Number,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const RecipeTakeSchema = new Schema(
   {
     user: {
@@ -12,23 +44,8 @@ const RecipeTakeSchema = new Schema(
       type: Number,
       required: true,
     },
-    ingredients: [
-      {
-        type: {
-          ingredient: {
-            type: Schema.Types.ObjectId,
-            ref: ModelName.Ingredient,
-          },
-          amount: String,
-          order: Number,
-        },
-      },
-    ],
-    steps: [
-      {
-        type: { order: Number, stepText: String },
-      },
-    ],
+    ingredients: [IngredientSchema],
+    steps: [StepSchema],
     takeNotes: {
       type: String,
       required: false,
