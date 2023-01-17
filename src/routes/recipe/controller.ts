@@ -1,4 +1,6 @@
+import { S3 } from "aws-sdk";
 import asyncHandler from "express-async-handler";
+import fs from "fs";
 import Collection from "../../model/Collection";
 import Recipe from "../../model/Recipe";
 import RecipeTake from "../../model/RecipeTake";
@@ -74,6 +76,43 @@ export const createRecipe = asyncHandler(
     }
   }
 );
+
+//--------------------------------------------------------------------------------
+
+export const uploadImage = asyncHandler(async (req, res) => {
+  const recipe = await Recipe.findOne({
+    user: req.user.id,
+    _id: req.params.id,
+  });
+
+  if (!req.file) {
+    res.status(400);
+    throw new Error("No image was provided");
+  }
+
+  if (!recipe) {
+    res.status(404);
+    throw new Error("We did not find the recipe you are looking for.");
+  }
+
+  const s3 = new S3({
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY!,
+      secretAccessKey: process.env.S3_SECRET!,
+    },
+  });
+
+  const fileContent = fs.readFileSync(req.file.path);
+
+  const params: S3.PutObjectRequest = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: recipe.id,
+    Body: fileContent,
+  };
+  await s3.upload(params);
+
+  res.status(200).json({ message: "Upload success" });
+});
 
 //--------------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 import {
   CustomRequest,
-  CustomResponse,
+  CustomResponse
 } from "../../types/Requests/CustomRequest";
 
 //--------------------------------------------------------------------------------
@@ -44,14 +44,12 @@ export type UpdateRecipeResponse = CustomResponse<UpdateRecipeResponseData>;
 interface TakeStep {
   order: number;
   stepText: string;
-  _id?: string;
 }
 
 interface TakeIngredient {
   ingredient: { id: string; name: string };
   amount: string;
   order: number;
-  _id?: string;
 }
 
 export interface TakeForRecipeResponse {

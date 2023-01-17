@@ -1,15 +1,15 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
-import UserRouter from "./routes/user/routes";
-import RecipeRouter from "./routes/recipe/routes";
-import CollectionRouter from "./routes/collection/routes";
-import TagRouter from "./routes/tags/routes";
-import IngredientRouter from "./routes/ingredients/routes";
-import TakeRouter from "./routes/takes/routes";
-import mongoose from "mongoose";
 import bodyParser from "body-parser";
-import errorHandler from "./middleware/errorHandler";
 import cors from "cors";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import mongoose from "mongoose";
+import errorHandler from "./middleware/errorHandler";
+import CollectionRouter from "./routes/collection/routes";
+import IngredientRouter from "./routes/ingredients/routes";
+import RecipeRouter from "./routes/recipe/routes";
+import TagRouter from "./routes/tags/routes";
+import TakeRouter from "./routes/takes/routes";
+import UserRouter from "./routes/user/routes";
 
 dotenv.config();
 
