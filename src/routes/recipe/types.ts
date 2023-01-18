@@ -1,6 +1,6 @@
 import {
   CustomRequest,
-  CustomResponse
+  CustomResponse,
 } from "../../types/Requests/CustomRequest";
 
 //--------------------------------------------------------------------------------
@@ -78,6 +78,7 @@ interface GetRecipeResponseData {
   recipeDescription?: string;
   isEditable: boolean;
   tags: Array<{ id: string; tagName: string }>;
+  image?: string;
   // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

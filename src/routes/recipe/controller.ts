@@ -90,6 +90,8 @@ export const uploadImage = asyncHandler(async (req, res) => {
     throw new Error("No image was provided");
   }
 
+  console.log(req.file);
+
   if (!recipe) {
     res.status(404);
     throw new Error("We did not find the recipe you are looking for.");
@@ -109,7 +111,10 @@ export const uploadImage = asyncHandler(async (req, res) => {
     Key: recipe.id,
     Body: fileContent,
   };
-  await s3.upload(params);
+  await s3.upload(params, function (err, data) {
+    console.log({ err });
+    console.log({ data });
+  });
 
   res.status(200).json({ message: "Upload success" });
 });
@@ -194,6 +199,26 @@ export const getRecipeById = asyncHandler(
       throw new Error(`Recipe with id ${req.params.id} was not found`);
     }
 
+    const s3 = new S3({
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY!,
+        secretAccessKey: process.env.S3_SECRET!,
+      },
+    });
+
+    console.log("ARE WE HERE?");
+
+    let image;
+    try {
+      image = await s3.getSignedUrl("getObject", {
+        Bucket: process.env.S3_BUCKET_NAME!,
+        Key: req.params.id,
+        Expires: 60 * 60 * 5,
+      });
+    } catch (err) {
+      console.log({ err });
+    }
+
     let isEditable = false;
     if (req.user && req.user.id === recipe.user.id) isEditable = true;
 
@@ -224,6 +249,7 @@ export const getRecipeById = asyncHandler(
       tags: recipe.tags.map((tag) => {
         return { id: tag._id, tagName: tag.tagName };
       }),
+      image,
     });
   }
 );
