@@ -12,7 +12,7 @@ const RecipeSchema = new Schema(
       type: String,
       required: true,
     },
-    isPrivate: {
+    isPublished: {
       type: Boolean,
       required: true,
     },

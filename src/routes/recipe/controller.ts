@@ -23,12 +23,12 @@ import {
  */
 export const createRecipe = asyncHandler(
   async (req: CreateRecipeRequest, res: CreateRecipeResponse) => {
-    const { name, isPrivate, collectionId } = req.body;
+    const { name, isPublished, collectionId } = req.body;
 
     if (!name) {
       res.status(400);
       throw new Error("No recipe name provided");
-    } else if (!isPrivate) {
+    } else if (!isPublished) {
       res.status(400);
       throw new Error(
         "You need to provide whether or not this recipe is private."
@@ -57,7 +57,7 @@ export const createRecipe = asyncHandler(
     const recipe = await Recipe.create({
       name,
       user: req.user.id,
-      isPrivate: isPrivate === "Y",
+      isPublished: isPublished === "Y",
       collectionForRecipe: collectionForRecipe.id,
       takes: [firstTake.id],
     });
@@ -202,6 +202,13 @@ export const getRecipeById = asyncHandler(
       throw new Error(`Recipe with id ${req.params.id} was not found`);
     }
 
+    if (!recipe.isPublished) {
+      if (!req.user || req.user.id !== recipe.user.id) {
+        res.status(404);
+        throw new Error("We could not find the recipe you were looking for");
+      }
+    }
+
     const s3 = new S3({
       credentials: {
         accessKeyId: process.env.S3_ACCESS_KEY!,
@@ -228,6 +235,7 @@ export const getRecipeById = asyncHandler(
       name: recipe.name,
       takes: recipe.takes,
       recipeDescription: recipe.recipeDescription,
+      isPublished: recipe.isPublished,
       createdBy: {
         displayName: recipe.user.displayName,
         id: recipe.user.id,

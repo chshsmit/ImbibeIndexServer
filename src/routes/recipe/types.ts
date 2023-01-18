@@ -9,7 +9,7 @@ import {
 
 interface CreateRecipeBody {
   name: string;
-  isPrivate: "Y" | "N";
+  isPublished: "Y" | "N";
   collectionId: string;
 }
 export type CreateRecipeRequest = CustomRequest<CreateRecipeBody>;
@@ -28,7 +28,7 @@ interface UpdateRecipeBody {
   name?: string;
   recipeDescription?: string;
   tags?: Array<string>;
-  isPrivate?: boolean;
+  isPublished?: boolean;
 }
 export type UpdateRecipeRequest = CustomRequest<UpdateRecipeBody>;
 
@@ -79,6 +79,7 @@ interface GetRecipeResponseData {
   isEditable: boolean;
   tags: Array<{ id: string; tagName: string }>;
   image?: string;
+  isPublished: boolean;
   // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;
