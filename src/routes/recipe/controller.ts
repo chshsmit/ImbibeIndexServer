@@ -90,8 +90,6 @@ export const uploadImage = asyncHandler(async (req, res) => {
     throw new Error("No image was provided");
   }
 
-  console.log(req.file);
-
   if (!recipe) {
     res.status(404);
     throw new Error("We did not find the recipe you are looking for.");
@@ -111,12 +109,17 @@ export const uploadImage = asyncHandler(async (req, res) => {
     Key: recipe.id,
     Body: fileContent,
   };
-  await s3.upload(params, function (err, data) {
-    console.log({ err });
-    console.log({ data });
+  s3.upload(params, function (err) {
+    if (err) {
+      res.status(400);
+      throw new Error("Something went wrong");
+    } else {
+      fs.unlink(req.file!.path, () => {
+        console.log("Deleted file");
+      });
+      res.status(201).json({ message: "Upload success" });
+    }
   });
-
-  res.status(200).json({ message: "Upload success" });
 });
 
 //--------------------------------------------------------------------------------
@@ -206,8 +209,6 @@ export const getRecipeById = asyncHandler(
       },
     });
 
-    console.log("ARE WE HERE?");
-
     let image;
     try {
       image = await s3.getSignedUrl("getObject", {
@@ -216,24 +217,11 @@ export const getRecipeById = asyncHandler(
         Expires: 60 * 60 * 5,
       });
     } catch (err) {
-      console.log({ err });
+      image = "";
     }
 
     let isEditable = false;
     if (req.user && req.user.id === recipe.user.id) isEditable = true;
-
-    // We want to delete a bunch of ids
-    // TODO: Figure out a more elegant solution for this
-    // recipe.takes.forEach((take) => {
-    //   take.ingredients.forEach((ingredient) => {
-    //     ingredient._id = undefined;
-    //   });
-    //   take.steps.forEach((step) => {
-    //     step._id = undefined;
-    //   });
-    // });
-
-    // console.log(JSON.stringify(recipe.takes));
 
     res.status(200).json({
       id: recipe.id,
