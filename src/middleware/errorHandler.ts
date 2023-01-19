@@ -9,7 +9,15 @@ const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: any
 ) => {
-  const statusCode = res.statusCode ? res.statusCode : 500;
+  const statusCode =
+    res.statusCode &&
+    res.statusCode !== 200 &&
+    res.statusCode !== 201 &&
+    res.statusCode !== 202
+      ? res.statusCode
+      : 500;
+
+  console.log(statusCode);
   res.status(statusCode);
   res.json({
     message: err.message,

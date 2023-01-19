@@ -171,31 +171,35 @@ interface UserForRecipe {
 
 export const getRecipeById = asyncHandler(
   async (req, res: GetRecipeResponse) => {
-    // res.json({ message: `Getting recipe with id ${req.params.id}` });
-    // TODO: Implement PRIVATE recipe
-    const recipe = await Recipe.findById(req.params.id)
-      .populate<{
-        user: UserForRecipe;
-      }>("user", "name displayName id")
-      .populate<{
-        takes: Array<TakeForRecipeResponse>;
-      }>({
-        path: "takes",
-        select: "id takeNumber steps takeNotes",
-        populate: [
-          {
-            path: "ingredients",
-            populate: {
-              path: "ingredient",
-              select: "name",
+    let recipe;
+    try {
+      recipe = await Recipe.findById(req.params.id)
+        .populate<{
+          user: UserForRecipe;
+        }>("user", "name displayName id")
+        .populate<{
+          takes: Array<TakeForRecipeResponse>;
+        }>({
+          path: "takes",
+          select: "id takeNumber steps takeNotes",
+          populate: [
+            {
+              path: "ingredients",
+              populate: {
+                path: "ingredient",
+                select: "name",
+              },
             },
-          },
-        ],
-      })
-      .populate<{ tags: Array<TagForRecipeReponse> }>({
-        path: "tags",
-        select: "_id tagName",
-      });
+          ],
+        })
+        .populate<{ tags: Array<TagForRecipeReponse> }>({
+          path: "tags",
+          select: "_id tagName",
+        });
+    } catch (err) {
+      res.status(404);
+      throw new Error("Recipe not found");
+    }
 
     if (!recipe) {
       res.status(404);
