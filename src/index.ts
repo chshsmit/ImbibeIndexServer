@@ -7,6 +7,7 @@ import errorHandler from "./middleware/errorHandler";
 import CollectionRouter from "./routes/collection/routes";
 import IngredientRouter from "./routes/ingredients/routes";
 import RecipeRouter from "./routes/recipe/routes";
+import SearchRouter from "./routes/search/routes";
 import TagRouter from "./routes/tags/routes";
 import TakeRouter from "./routes/takes/routes";
 import UserRouter from "./routes/user/routes";
@@ -34,6 +35,7 @@ app.use("/collection", CollectionRouter);
 app.use("/tags", TagRouter);
 app.use("/ingredients", IngredientRouter);
 app.use("/takes", TakeRouter);
+app.use("/search", SearchRouter);
 
 app.use(errorHandler);
 

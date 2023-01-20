@@ -4,6 +4,7 @@ import {
   CreateIngredientRequest,
   CreateIngredientResponse,
   GetIngredientsResponse,
+  UpdateIngredientRequest,
 } from "./types";
 
 //--------------------------------------------------------------------------------
@@ -16,7 +17,7 @@ import {
 
 export const createIngredientForUser = asyncHandler(
   async (req: CreateIngredientRequest, res: CreateIngredientResponse) => {
-    const { name } = req.body;
+    const { name, category } = req.body;
 
     if (!name) {
       res.status(400);
@@ -36,9 +37,37 @@ export const createIngredientForUser = asyncHandler(
     await Ingredient.create({
       user: req.user.id,
       name: name,
+      category,
     });
 
     res.status(201).json({ message: "Successfully created ingredient" });
+  }
+);
+
+//--------------------------------------------------------------------------------
+
+/**
+ * @method PATCH
+ * @route /ingredients/:id
+ * @protected yes
+ */
+export const updateIngredient = asyncHandler(
+  async (req: UpdateIngredientRequest, res) => {
+    const ingredientId = req.params.id;
+
+    // TODO: Figure out how to handle public ingredients
+    const ingredient = await Ingredient.findById(ingredientId);
+
+    if (!ingredient || ingredient.user?._id.toString() !== req.user.id) {
+      res.status(404);
+      throw new Error("We could not find the ingredient you were looking for");
+    }
+
+    await ingredient.updateOne({
+      ...req.body,
+    });
+
+    res.status(201).json({ message: "updated" });
   }
 );
 
@@ -52,7 +81,7 @@ export const createIngredientForUser = asyncHandler(
 
 export const createIngredient = asyncHandler(
   async (req: CreateIngredientRequest, res: CreateIngredientResponse) => {
-    const { name } = req.body;
+    const { name, category } = req.body;
 
     if (!name) {
       res.status(400);
@@ -71,6 +100,7 @@ export const createIngredient = asyncHandler(
 
     await Ingredient.create({
       name: name,
+      category,
     });
 
     res.status(201).json({ message: "Successfully created ingredient" });
@@ -97,6 +127,7 @@ export const getIngredientsForUser = asyncHandler(
       return {
         id: ingredient._id.toString(),
         name: ingredient.name,
+        category: ingredient.category,
       };
     });
 
@@ -124,6 +155,7 @@ export const getPublicIngredients = asyncHandler(
       return {
         id: ingredient._id.toString(),
         name: ingredient.name,
+        category: ingredient.category,
       };
     });
 

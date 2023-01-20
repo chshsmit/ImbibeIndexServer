@@ -6,6 +6,7 @@ import {
 //--------------------------------------------------------------------------------
 interface CreateIngredientBody {
   name: string;
+  category?: string;
 }
 export type CreateIngredientRequest = CustomRequest<CreateIngredientBody>;
 
@@ -17,6 +18,14 @@ export type CreateIngredientResponse =
 
 //--------------------------------------------------------------------------------
 
-type IngredientsArray = Array<{ id: string; name: string }>;
+interface UpdateIngredientBody {
+  name?: string;
+  category?: string;
+}
+
+export type UpdateIngredientRequest = CustomRequest<UpdateIngredientBody>;
+//--------------------------------------------------------------------------------
+
+type IngredientsArray = Array<{ id: string; name: string; category?: string }>;
 
 export type GetIngredientsResponse = CustomResponse<IngredientsArray>;

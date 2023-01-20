@@ -12,6 +12,10 @@ const IngredientSchema = new Schema(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );
