@@ -80,6 +80,7 @@ interface GetRecipeResponseData {
   tags: Array<{ id: string; tagName: string }>;
   image?: string;
   isPublished: boolean;
+  likes: Array<string>;
   // takes: Array<>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

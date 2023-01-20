@@ -37,6 +37,12 @@ const RecipeSchema = new Schema(
         ref: ModelName.Tag,
       },
     ],
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: ModelName.User,
+      },
+    ],
   },
   { timestamps: true }
 );

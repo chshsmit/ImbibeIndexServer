@@ -4,6 +4,7 @@ import fs from "fs";
 import Collection from "../../model/Collection";
 import Recipe from "../../model/Recipe";
 import RecipeTake from "../../model/RecipeTake";
+import { getImageForRecipe } from "../../utils/utils";
 import {
   CreateRecipeRequest,
   CreateRecipeResponse,
@@ -213,23 +214,8 @@ export const getRecipeById = asyncHandler(
       }
     }
 
-    const s3 = new S3({
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY!,
-        secretAccessKey: process.env.S3_SECRET!,
-      },
-    });
-
-    let image;
-    try {
-      image = await s3.getSignedUrl("getObject", {
-        Bucket: process.env.S3_BUCKET_NAME!,
-        Key: req.params.id,
-        Expires: 60 * 60 * 5,
-      });
-    } catch (err) {
-      image = "";
-    }
+    // Get image
+    const imageUrl = await getImageForRecipe(recipe.id);
 
     let isEditable = false;
     if (req.user && req.user.id === recipe.user.id) isEditable = true;
@@ -249,7 +235,8 @@ export const getRecipeById = asyncHandler(
       tags: recipe.tags.map((tag) => {
         return { id: tag._id, tagName: tag.tagName };
       }),
-      image,
+      image: imageUrl,
+      likes: recipe.likes.map((like) => like.toString()),
     });
   }
 );
