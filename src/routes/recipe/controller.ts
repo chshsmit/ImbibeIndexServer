@@ -61,6 +61,7 @@ export const createRecipe = asyncHandler(
       isPublished: isPublished === "Y",
       collectionForRecipe: collectionForRecipe.id,
       takes: [firstTake.id],
+      likes: [req.user.id],
     });
 
     if (recipe) {
@@ -77,6 +78,31 @@ export const createRecipe = asyncHandler(
     }
   }
 );
+
+//--------------------------------------------------------------------------------
+
+export const likeRecipe = asyncHandler(async (req, res) => {
+  const recipe = await Recipe.findById(req.params.id);
+
+  console.log(req.params.id);
+
+  if (!recipe) {
+    res.status(404);
+    throw new Error("We could not find that recipe");
+  }
+
+  if (recipe.likes.includes(req.user.id)) {
+    await recipe.updateOne({
+      $pull: { likes: req.user.id },
+    });
+  } else {
+    await recipe.updateOne({
+      $push: { likes: req.user.id },
+    });
+  }
+
+  res.status(201).json({ message: "Vote submitted successfully" });
+});
 
 //--------------------------------------------------------------------------------
 

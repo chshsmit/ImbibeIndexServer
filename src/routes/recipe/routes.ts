@@ -4,6 +4,7 @@ import protect, { useUser } from "../../middleware/auth";
 import {
   createRecipe,
   getRecipeById,
+  likeRecipe,
   updateRecipe,
   uploadImage,
 } from "./controller";
@@ -24,5 +25,8 @@ router.post(
   [protect, multer({ dest: "uploads/" }).single("image")],
   uploadImage
 );
+
+// Like a recipe
+router.post("/:id/like", protect, likeRecipe);
 
 export default router;
