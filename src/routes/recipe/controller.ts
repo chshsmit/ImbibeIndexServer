@@ -12,7 +12,7 @@ import {
   TagForRecipeReponse,
   TakeForRecipeResponse,
   UpdateRecipeRequest,
-  UpdateRecipeResponse,
+  UpdateRecipeResponse
 } from "./types";
 
 //--------------------------------------------------------------------------------
@@ -84,7 +84,6 @@ export const createRecipe = asyncHandler(
 export const likeRecipe = asyncHandler(async (req, res) => {
   const recipe = await Recipe.findById(req.params.id);
 
-  console.log(req.params.id);
 
   if (!recipe) {
     res.status(404);
