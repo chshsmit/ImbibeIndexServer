@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
 
 export default class AuthUtils {
-  public static generateJwtToken(id: Types.ObjectId) {
+  public static generateJwtToken(id: Types.ObjectId | number) {
     return jwt.sign({ id }, process.env.JWT_SECRET!, {
       expiresIn: "30d",
     });

@@ -11,7 +11,7 @@ import SearchRouter from "./routes/search/routes";
 import TagRouter from "./routes/tags/routes";
 import TakeRouter from "./routes/takes/routes";
 import UserRouter from "./routes/user/routes";
-import TestUserRouter from "./routes/user/v2/routes";
+import UserRouterV2 from "./routes/user/routes.v2";
 
 dotenv.config();
 
@@ -37,7 +37,9 @@ app.use("/tags", TagRouter);
 app.use("/ingredients", IngredientRouter);
 app.use("/takes", TakeRouter);
 app.use("/search", SearchRouter);
-app.use("/test", TestUserRouter);
+
+// V2
+app.use("/v2/user", UserRouterV2);
 
 app.use(errorHandler);
 

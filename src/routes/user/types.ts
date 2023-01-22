@@ -16,7 +16,7 @@ interface RegisterBody {
 export type RegisterRequest = CustomRequest<RegisterBody>;
 
 interface RegisterResponseData {
-  id: string;
+  id: number | string;
   name: string;
   email: string;
   displayName: string;
@@ -35,7 +35,7 @@ interface LoginBody {
 export type LoginRequest = CustomRequest<LoginBody>;
 
 interface LoginResponseData {
-  id: string;
+  id: string | number;
   name: string;
   email: string;
   displayName: string;
@@ -48,7 +48,7 @@ export type LoginResponse = CustomResponse<LoginResponseData>;
 //--------------------------------------------------------------------------------
 
 interface GetSelfResponseData {
-  id: string;
+  id: string | number;
   name: string;
   email: string;
   displayName: string;
