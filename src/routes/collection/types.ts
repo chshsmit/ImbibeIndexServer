@@ -9,15 +9,15 @@ import {
 
 interface CreateCollectionBody {
   name: string;
-  parentCollectionId: string;
+  parentCollectionId: string | number;
 }
 
 export type CreateCollectionRequest = CustomRequest<CreateCollectionBody>;
 
 interface CreateCollectionResponseData {
   collectionName: string;
-  parentCollection: string;
-  id: string;
+  parentCollection: string | number;
+  id: string | number;
 }
 export type CreateCollectionResponse =
   CustomResponse<CreateCollectionResponseData>;

@@ -14,6 +14,8 @@ import TakeRouter from "./routes/takes/routes";
 import UserRouter from "./routes/user/routes";
 import UserRouterV2 from "./routes/user/routes.v2";
 
+import CollectionRouterV2 from "./routes/collection/routes.v2";
+
 dotenv.config();
 
 const app: Express = express();
@@ -41,6 +43,7 @@ app.use("/search", SearchRouter);
 
 // V2
 app.use("/v2/user", UserRouterV2);
+app.use("/v2/collection", CollectionRouterV2);
 app.use("/v2/tags", TagRouterV2);
 
 app.use(errorHandler);
