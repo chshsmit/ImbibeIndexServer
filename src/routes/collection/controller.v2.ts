@@ -1,8 +1,86 @@
 import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
-import { CreateCollectionRequest, CreateCollectionResponse } from "./types";
+import {
+  CollectionForUser,
+  CreateCollectionRequest,
+  CreateCollectionResponse,
+  GetCollectionsForUserResponse
+} from "./types";
 
 const prisma = new PrismaClient();
+
+//--------------------------------------------------------------------------------
+
+/**
+ * @method GET
+ * @route /collection/user
+ * @protected yes
+ */
+export const getRootCollectionForUser = asyncHandler(
+  async (req, res: GetCollectionsForUserResponse) => {
+    const allCollectionsForUser = await prisma.collection.findMany({
+      where: {
+        userId: Number(req.user.id),
+      },
+      include: {
+        recipes: {
+          include: {
+            tags: {
+              include: {
+                tag: {
+                  select: {
+                    id: true,
+                    tagName: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        subCollections: {
+          select: {
+            id: true,
+            collectionName: true,
+          },
+        },
+      },
+    });
+
+    const collections: Record<number, CollectionForUser> = {};
+    let rootCollectionId = "";
+    allCollectionsForUser.forEach((collection) => {
+      if (collection.isRootCollection) {
+        rootCollectionId = collection.id.toString();
+      }
+
+      const recipes = collection.recipes.map((recipe) => {
+        return {
+          name: recipe.name,
+          id: recipe.id,
+          tags: recipe.tags.map((tag) => tag.tag.tagName),
+        };
+      });
+
+      const collectionForUser: CollectionForUser = {
+        collectionName: collection.collectionName,
+        id: collection.id,
+        isRootCollection: collection.isRootCollection,
+        subCollections: collection.subCollections,
+        parentCollection: collection.parentCollectionId ?? undefined,
+        recipes,
+      };
+
+      collections[collection.id] = collectionForUser;
+    });
+
+    console.log(allCollectionsForUser);
+
+    res.status(200).json({
+      collections,
+      rootCollectionId
+    });
+  }
+);
 
 //--------------------------------------------------------------------------------
 

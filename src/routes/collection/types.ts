@@ -29,25 +29,25 @@ export type CreateCollectionResponse =
 export interface CollectionForUserRecipe {
   name: string;
   tags: Array<string>;
-  id: string;
+  id: string | number;
 }
 
 export interface SubCollection {
   collectionName: string;
-  id: string;
+  id: string | number;
 }
 
 export interface CollectionForUser {
   collectionName: string;
-  id: string;
+  id: string | number;
   isRootCollection: boolean;
-  parentCollection?: string;
+  parentCollection?: string | number;
   subCollections: Array<SubCollection>;
   recipes: Array<CollectionForUserRecipe>;
 }
 
 interface GetCollectionsForUserData {
-  collections: Record<string, CollectionForUser>;
+  collections: Record<string | number, CollectionForUser>;
   rootCollectionId: string;
 }
 
