@@ -47,13 +47,13 @@ interface TakeStep {
 }
 
 interface TakeIngredient {
-  ingredient: { id: string; name: string };
+  ingredient: { id: string | number; name: string };
   amount: string;
   order: number;
 }
 
 export interface TakeForRecipeResponse {
-  id: string;
+  id: string | number;
   takeNumber: number;
   ingredients: Array<TakeIngredient>;
   steps: Array<TakeStep>;
@@ -67,20 +67,19 @@ export interface TagForRecipeReponse {
 }
 
 interface GetRecipeResponseData {
-  id: string;
+  id: string | number;
   name: string;
   createdAt: NativeDate | Date;
   createdBy: {
     displayName: string;
-    id: string;
+    id: string | number;
   };
   takes: Array<TakeForRecipeResponse>;
-  recipeDescription?: string;
+  recipeDescription?: string | null;
   isEditable: boolean;
-  tags: Array<{ id: string; tagName: string }>;
+  tags: Array<{ id: string | number; tagName: string }>;
   image?: string;
   isPublished: boolean;
-  likes: Array<string>;
-  // takes: Array<>;
+  likes: Array<string | number>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

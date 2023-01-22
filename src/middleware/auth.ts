@@ -12,6 +12,8 @@ const prisma = new PrismaClient();
 export const useUserV2 = asyncHandler(async (req, res, next) => {
   let token;
 
+  console.log("Are we here?");
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -37,6 +39,9 @@ export const useUserV2 = asyncHandler(async (req, res, next) => {
       req.user = undefined;
       next();
     }
+  } else {
+    req.user = undefined;
+    next();
   }
 });
 

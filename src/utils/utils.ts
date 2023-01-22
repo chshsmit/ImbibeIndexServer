@@ -1,7 +1,9 @@
 import { S3 } from "aws-sdk";
 
 // ----------------------------------------------------------------------------------------------------
-export const getImageForRecipe = async (recipeId: string): Promise<string> => {
+export const getImageForRecipe = async (
+  recipeId: string | number
+): Promise<string> => {
   const s3 = new S3({
     credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY!,
@@ -13,7 +15,7 @@ export const getImageForRecipe = async (recipeId: string): Promise<string> => {
   try {
     image = await s3.getSignedUrl("getObject", {
       Bucket: process.env.S3_BUCKET_NAME!,
-      Key: recipeId,
+      Key: `picture-for-recipe-${recipeId}`,
       Expires: 60 * 60 * 5,
     });
   } catch (err) {
