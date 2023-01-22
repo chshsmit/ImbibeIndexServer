@@ -57,7 +57,7 @@ export interface TakeForRecipeResponse {
   takeNumber: number;
   ingredients: Array<TakeIngredient>;
   steps: Array<TakeStep>;
-  takeNotes: string;
+  takeNotes?: string | null;
 }
 // interface RecipeTake {}
 

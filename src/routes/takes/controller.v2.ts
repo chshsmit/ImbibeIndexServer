@@ -44,7 +44,6 @@ export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
   // Save all the steps
   if (steps) {
     for (const step of steps) {
-      console.log({ step });
       await prisma.recipeTakeStep.upsert({
         where: {
           id: step.id || 0,
