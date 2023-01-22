@@ -4,7 +4,7 @@ import {
   CollectionForUser,
   CreateCollectionRequest,
   CreateCollectionResponse,
-  GetCollectionsForUserResponse
+  GetCollectionsForUserResponse,
 } from "./types";
 
 const prisma = new PrismaClient();
@@ -73,11 +73,9 @@ export const getRootCollectionForUser = asyncHandler(
       collections[collection.id] = collectionForUser;
     });
 
-    console.log(allCollectionsForUser);
-
     res.status(200).json({
       collections,
-      rootCollectionId
+      rootCollectionId,
     });
   }
 );
