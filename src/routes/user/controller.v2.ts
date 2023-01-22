@@ -115,8 +115,6 @@ export const loginUser = asyncHandler(
  * @protected yes
  */
 export const getSelf = asyncHandler(async (req, res: GetSelfResponse) => {
-  console.log(req.user);
-
   const user = await prisma.user.findUnique({
     where: {
       id: Number(req.user.id),

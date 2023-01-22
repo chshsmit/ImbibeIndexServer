@@ -17,6 +17,7 @@ dist-ssr
 # Environment
 .env
 uploads
+TODO_LIST
 
 # Editor directories and files
 .vscode/*

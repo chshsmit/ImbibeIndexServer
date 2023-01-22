@@ -121,7 +121,7 @@ model RecipeTake {
 
 model Tag {
   id        Int      @id @default(autoincrement())
-  tagName   String
+  tagName   String   @unique
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
   // Relations

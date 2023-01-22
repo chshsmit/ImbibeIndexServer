@@ -9,6 +9,7 @@ import IngredientRouter from "./routes/ingredients/routes";
 import RecipeRouter from "./routes/recipe/routes";
 import SearchRouter from "./routes/search/routes";
 import TagRouter from "./routes/tags/routes";
+import TagRouterV2 from "./routes/tags/routes.v2";
 import TakeRouter from "./routes/takes/routes";
 import UserRouter from "./routes/user/routes";
 import UserRouterV2 from "./routes/user/routes.v2";
@@ -40,6 +41,7 @@ app.use("/search", SearchRouter);
 
 // V2
 app.use("/v2/user", UserRouterV2);
+app.use("/v2/tags", TagRouterV2);
 
 app.use(errorHandler);
 
