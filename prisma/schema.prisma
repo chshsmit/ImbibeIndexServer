@@ -113,7 +113,7 @@ model RecipeTakeIngredient {
 model RecipeTake {
   id          Int                    @id @default(autoincrement())
   takeNumber  Int
-  takeNotes   String
+  takeNotes   String?
   // Relations
   user        User                   @relation(fields: [userId], references: [id])
   ingredients RecipeTakeIngredient[]
@@ -121,6 +121,8 @@ model RecipeTake {
   recipe      Recipe                 @relation(fields: [recipeId], references: [id])
   recipeId    Int
   userId      Int
+
+  @@unique([id, userId])
 }
 
 model Tag {

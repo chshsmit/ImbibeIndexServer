@@ -13,6 +13,7 @@ import SearchRouter from "./routes/search/routes";
 import TagRouter from "./routes/tags/routes";
 import TagRouterV2 from "./routes/tags/routes.v2";
 import TakeRouter from "./routes/takes/routes";
+import TakeRouterV2 from "./routes/takes/routes.v2";
 import UserRouter from "./routes/user/routes";
 import UserRouterV2 from "./routes/user/routes.v2";
 
@@ -49,7 +50,7 @@ app.use("/v2/recipe", RecipeRouterV2);
 app.use("/v2/collection", CollectionRouterV2);
 app.use("/v2/tags", TagRouterV2);
 app.use("/v2/ingredients", IngredientRouterV2);
-// Take placeholder
+app.use("/v2/takes", TakeRouterV2);
 // Search placeholder
 
 app.use(errorHandler);
