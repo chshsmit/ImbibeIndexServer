@@ -45,7 +45,7 @@ model Collection {
 model Ingredient {
   id                   Int                    @id @default(autoincrement())
   name                 String
-  category             String
+  category             String?
   createdAt            DateTime               @default(now())
   updateAt             DateTime               @updatedAt
   // Relations

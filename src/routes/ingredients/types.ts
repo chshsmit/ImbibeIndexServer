@@ -26,6 +26,10 @@ interface UpdateIngredientBody {
 export type UpdateIngredientRequest = CustomRequest<UpdateIngredientBody>;
 //--------------------------------------------------------------------------------
 
-type IngredientsArray = Array<{ id: string; name: string; category?: string }>;
+type IngredientsArray = Array<{
+  id: string | number;
+  name: string;
+  category?: string | null;
+}>;
 
 export type GetIngredientsResponse = CustomResponse<IngredientsArray>;
