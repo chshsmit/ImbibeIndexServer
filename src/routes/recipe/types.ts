@@ -15,7 +15,7 @@ interface CreateRecipeBody {
 export type CreateRecipeRequest = CustomRequest<CreateRecipeBody>;
 
 interface CreateRecipeResponseData {
-  id: string;
+  id: string | number;
   name: string;
 }
 export type CreateRecipeResponse = CustomResponse<CreateRecipeResponseData>;

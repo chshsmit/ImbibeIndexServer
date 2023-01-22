@@ -8,6 +8,7 @@ import CollectionRouter from "./routes/collection/routes";
 import IngredientRouter from "./routes/ingredients/routes";
 import IngredientRouterV2 from "./routes/ingredients/routes.v2";
 import RecipeRouter from "./routes/recipe/routes";
+import RecipeRouterV2 from "./routes/recipe/routes.v2";
 import SearchRouter from "./routes/search/routes";
 import TagRouter from "./routes/tags/routes";
 import TagRouterV2 from "./routes/tags/routes.v2";
@@ -44,7 +45,7 @@ app.use("/search", SearchRouter);
 
 // V2
 app.use("/v2/user", UserRouterV2);
-// Recipe placeholder
+app.use("/v2/recipe", RecipeRouterV2);
 app.use("/v2/collection", CollectionRouterV2);
 app.use("/v2/tags", TagRouterV2);
 app.use("/v2/ingredients", IngredientRouterV2);
