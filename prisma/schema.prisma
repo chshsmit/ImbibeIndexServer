@@ -78,6 +78,8 @@ model RecipeLike {
   user     User   @relation(fields: [userId], references: [id]) // The user that liked it
   recipeId Int
   userId   Int
+
+  @@unique([userId, recipeId])
 }
 
 // Make sure the order is unique per take

@@ -28,6 +28,8 @@ export const createRecipe = asyncHandler(
       throw new Error("You need provide the collection this recipe is part of");
     }
 
+    // TODO: Make sure the user that submitted this owns the collection the recipe
+    //       is going in.
     const newRecipe = await prisma.recipe.create({
       data: {
         name,
@@ -64,3 +66,36 @@ export const createRecipe = asyncHandler(
     }
   }
 );
+
+//--------------------------------------------------------------------------------
+
+export const likeRecipe = asyncHandler(async (req, res) => {
+  const userLike = await prisma.recipeLike.findUnique({
+    where: {
+      userId_recipeId: {
+        userId: Number(req.user.id),
+        recipeId: Number(req.params.id),
+      },
+    },
+  });
+
+  if (!userLike) {
+    await prisma.recipeLike.create({
+      data: {
+        userId: Number(req.user.id),
+        recipeId: Number(req.params.id),
+      },
+    });
+  } else {
+    await prisma.recipeLike.delete({
+      where: {
+        userId_recipeId: {
+          userId: Number(req.user.id),
+          recipeId: Number(req.params.id),
+        },
+      },
+    });
+  }
+
+  res.status(201).json({ message: "Vote submitted successfully" });
+});
