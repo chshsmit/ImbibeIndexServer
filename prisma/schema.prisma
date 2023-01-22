@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DB_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  displayName String
+  password    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  // Relations
+  ingredients Ingredient[]
+  collections Collection[]
+  recipes     Recipe[]
+  RecipeLike  RecipeLike[]
+  RecipeTake  RecipeTake[]
+}
+
+model Collection {
+  id               Int      @id @default(autoincrement())
+  collectionName   String
+  isRootCollection Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updateAt         DateTime @updatedAt
+  // Relations
+  user             User?    @relation(fields: [userId], references: [id])
+  userId           Int?
+  recipes          Recipe[]
+
+  parentCollectionId Int?
+  parentCollection   Collection?  @relation("CollectionSubCollection", fields: [parentCollectionId], references: [id])
+  subCollections     Collection[] @relation("CollectionSubCollection")
+}
+
+model Ingredient {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  category             String
+  createdAt            DateTime               @default(now())
+  updateAt             DateTime               @updatedAt
+  // Relations
+  User                 User?                  @relation(fields: [userId], references: [id])
+  userId               Int?
+  RecipeTakeIngredient RecipeTakeIngredient[]
+}
+
+model Recipe {
+  id                Int          @id @default(autoincrement())
+  name              String
+  isPublished       Boolean      @default(false)
+  recipeDescription String?
+  createdAt         DateTime     @default(now())
+  updateAt          DateTime     @updatedAt
+  // Relations
+  user              User         @relation(fields: [userId], references: [id])
+  userId            Int
+  collection        Collection   @relation(fields: [collectionId], references: [id])
+  collectionId      Int
+  takes             RecipeTake[]
+  tags              Tag[]
+  likes             RecipeLike[]
+}
+
+model RecipeLike {
+  id       Int    @id @default(autoincrement())
+  // Relations
+  recipe   Recipe @relation(fields: [recipeId], references: [id]) // The liked recipe
+  user     User   @relation(fields: [userId], references: [id]) // The user that liked it
+  recipeId Int
+  userId   Int
+}
+
+// Make sure the order is unique per take
+model RecipeTakeStep {
+  id           Int        @id @default(autoincrement())
+  order        Int
+  stepText     String
+  createdAt    DateTime   @default(now())
+  updateAt     DateTime   @updatedAt
+  //Relations
+  recipeTake   RecipeTake @relation(fields: [recipeTakeId], references: [id])
+  recipeTakeId Int
+}
+
+// TODO: Make sure the order is unique per take
+model RecipeTakeIngredient {
+  id           Int        @id @default(autoincrement())
+  amount       String
+  order        Int
+  createdAt    DateTime   @default(now())
+  updateAt     DateTime   @updatedAt
+  // Relations
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId Int
+  recipeTake   RecipeTake @relation(fields: [recipeTakeId], references: [id])
+  recipeTakeId Int
+}
+
+model RecipeTake {
+  id          Int                    @id @default(autoincrement())
+  takeNumber  Int
+  takeNotes   String
+  // Relations
+  user        User                   @relation(fields: [userId], references: [id])
+  ingredients RecipeTakeIngredient[]
+  steps       RecipeTakeStep[]
+  recipe      Recipe                 @relation(fields: [recipeId], references: [id])
+  recipeId    Int
+  userId      Int
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  tagName   String
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  // Relations
+  recipes   Recipe[]
+}

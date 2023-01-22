@@ -6,9 +6,12 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "prisma-gen": "npx prisma generate",
+    "prisma-push": "npx prisma db push"
   },
   "dependencies": {
+    "@prisma/client": "^4.9.0",
     "@types/body-parser": "^1.19.2",
     "@types/cors": "^2.8.13",
     "@types/jsonwebtoken": "^9.0.0",
@@ -34,6 +37,7 @@
     "eslint": "^8.30.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.1",
+    "prisma": "^4.9.0",
     "typescript": "^4.9.4"
   }
 }
