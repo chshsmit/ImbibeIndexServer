@@ -44,16 +44,18 @@ export type UpdateRecipeResponse = CustomResponse<UpdateRecipeResponseData>;
 interface TakeStep {
   order: number;
   stepText: string;
+  id: number;
 }
 
 interface TakeIngredient {
-  ingredient: { id: string | number; name: string };
+  ingredient: { id: number; name: string };
   amount: string;
   order: number;
+  id: number;
 }
 
 export interface TakeForRecipeResponse {
-  id: string | number;
+  id: number;
   takeNumber: number;
   ingredients: Array<TakeIngredient>;
   steps: Array<TakeStep>;
@@ -61,25 +63,20 @@ export interface TakeForRecipeResponse {
 }
 // interface RecipeTake {}
 
-export interface TagForRecipeReponse {
-  _id: string;
-  tagName: string;
-}
-
 interface GetRecipeResponseData {
-  id: string | number;
+  id: number;
   name: string;
   createdAt: Date;
   createdBy: {
     displayName: string;
-    id: string | number;
+    id: number;
   };
   takes: Array<TakeForRecipeResponse>;
   recipeDescription?: string | null;
   isEditable: boolean;
-  tags: Array<{ id: string | number; tagName: string }>;
+  tags: Array<{ id: number; tagName: string }>;
   image?: string;
   isPublished: boolean;
-  likes: Array<string | number>;
+  likes: Array<number>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

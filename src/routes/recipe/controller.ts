@@ -291,12 +291,14 @@ export const getRecipeById = asyncHandler(
               },
               amount: ingredient.amount,
               order: ingredient.order,
+              id: ingredient.id,
             };
           }),
           steps: take.steps.map((step) => {
             return {
               order: step.order,
               stepText: step.stepText,
+              id: step.id,
             };
           }),
         };

@@ -27,7 +27,7 @@ export type UpdateIngredientRequest = CustomRequest<UpdateIngredientBody>;
 //--------------------------------------------------------------------------------
 
 type IngredientsArray = Array<{
-  id: string | number;
+  id: number;
   name: string;
   category?: string | null;
 }>;
