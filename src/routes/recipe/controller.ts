@@ -37,8 +37,20 @@ export const createRecipe = asyncHandler(
       throw new Error("You need provide the collection this recipe is part of");
     }
 
-    // TODO: Make sure the user that submitted this owns the collection the recipe
-    //       is going in.
+    const collection = await prisma.collection.findFirst({
+      where: {
+        id: Number(collectionId),
+        userId: Number(req.user.id),
+      },
+    });
+
+    if (!collection) {
+      res.status(404);
+      throw new Error(
+        "Sorry we could not find the recipe you were looking for"
+      );
+    }
+
     const newRecipe = await prisma.recipe.create({
       data: {
         name,
@@ -178,9 +190,6 @@ export const updateRecipe = asyncHandler(
         };
       });
     }
-
-    // TODO: Figure out how to solve the tags issue more elegantly
-    // There should be a way to delete and create in the same request
 
     // Delete all the tags for now
     await prisma.recipe.update({

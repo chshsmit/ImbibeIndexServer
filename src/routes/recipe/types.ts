@@ -10,7 +10,7 @@ import {
 interface CreateRecipeBody {
   name: string;
   isPublished: "Y" | "N";
-  collectionId: string;
+  collectionId: string | number;
 }
 export type CreateRecipeRequest = CustomRequest<CreateRecipeBody>;
 

@@ -96,7 +96,6 @@ model RecipeTakeStep {
   recipeTakeId Int
 }
 
-// TODO: Make sure the order is unique per take
 model RecipeTakeIngredient {
   id           Int        @id @default(autoincrement())
   amount       String

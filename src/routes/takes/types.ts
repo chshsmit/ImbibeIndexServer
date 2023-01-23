@@ -10,6 +10,8 @@ interface CreateOrUpdateTakeBody {
     ingredient: { id: string | number };
   }>;
   takeNotes?: string;
+  deletedSteps: Array<number>;
+  deletedIngredients: Array<number>;
 }
 
 export type CreateTakeRequest = CustomRequest<CreateOrUpdateTakeBody>;

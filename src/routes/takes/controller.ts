@@ -13,7 +13,8 @@ const prisma = new PrismaClient();
  */
 
 export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
-  const { steps, ingredients, takeNotes } = req.body;
+  const { steps, ingredients, takeNotes, deletedIngredients, deletedSteps } =
+    req.body;
 
   const { takeId } = req.params;
 
@@ -41,8 +42,15 @@ export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
     },
   });
 
-  // TODO: NEED TO UPDATE THIS SO IT TAKES A LIST OF DELETED INGREDIENTS AND STEPS
-  // Save all the steps
+  // Delete steps
+  await prisma.recipeTakeStep.deleteMany({
+    where: {
+      id: {
+        in: deletedSteps,
+      },
+    },
+  });
+
   if (steps) {
     for (const step of steps) {
       await prisma.recipeTakeStep.upsert({
@@ -61,6 +69,15 @@ export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
       });
     }
   }
+
+  // Delete ingredients
+  await prisma.recipeTakeIngredient.deleteMany({
+    where: {
+      id: {
+        in: deletedIngredients,
+      },
+    },
+  });
 
   // Save all the ingredients
   if (ingredients) {
