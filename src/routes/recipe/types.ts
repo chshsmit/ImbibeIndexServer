@@ -69,7 +69,7 @@ export interface TagForRecipeReponse {
 interface GetRecipeResponseData {
   id: string | number;
   name: string;
-  createdAt: NativeDate | Date;
+  createdAt: Date;
   createdBy: {
     displayName: string;
     id: string | number;
