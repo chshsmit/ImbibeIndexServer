@@ -47,10 +47,10 @@ export const getRootCollectionForUser = asyncHandler(
     });
 
     const collections: Record<number, CollectionForUser> = {};
-    let rootCollectionId = "";
+    let rootCollectionId = 0;
     allCollectionsForUser.forEach((collection) => {
       if (collection.isRootCollection) {
-        rootCollectionId = collection.id.toString();
+        rootCollectionId = collection.id;
       }
 
       const recipes = collection.recipes.map((recipe) => {

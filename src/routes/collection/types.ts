@@ -48,7 +48,7 @@ export interface CollectionForUser {
 
 interface GetCollectionsForUserData {
   collections: Record<string | number, CollectionForUser>;
-  rootCollectionId: string;
+  rootCollectionId: number;
 }
 
 export type GetCollectionsForUserResponse =
