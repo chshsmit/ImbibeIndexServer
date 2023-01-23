@@ -1,11 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
-import Ingredient from "../../model/Ingredient";
 import {
   CreateIngredientRequest,
   CreateIngredientResponse,
   GetIngredientsResponse,
   UpdateIngredientRequest,
 } from "./types";
+
+const prisma = new PrismaClient();
 
 //--------------------------------------------------------------------------------
 
@@ -23,10 +25,13 @@ export const createIngredientForUser = asyncHandler(
       res.status(400);
       throw new Error("You must provide a name for your ingredient");
     }
-    const userId = req.user.id;
-    const existingIngredient = await Ingredient.findOne({
-      name: name,
-      user: userId,
+
+    const userId = Number(req.user.id);
+    const existingIngredient = await prisma.ingredient.findFirst({
+      where: {
+        name: name,
+        userId: userId,
+      },
     });
 
     if (existingIngredient) {
@@ -34,10 +39,12 @@ export const createIngredientForUser = asyncHandler(
       throw new Error("This ingredient already exists");
     }
 
-    await Ingredient.create({
-      user: req.user.id,
-      name: name,
-      category,
+    await prisma.ingredient.create({
+      data: {
+        name,
+        category,
+        userId,
+      },
     });
 
     res.status(201).json({ message: "Successfully created ingredient" });
@@ -51,20 +58,31 @@ export const createIngredientForUser = asyncHandler(
  * @route /ingredients/:id
  * @protected yes
  */
+
 export const updateIngredient = asyncHandler(
   async (req: UpdateIngredientRequest, res) => {
-    const ingredientId = req.params.id;
+    const ingredientId = Number(req.params.id);
 
     // TODO: Figure out how to handle public ingredients
-    const ingredient = await Ingredient.findById(ingredientId);
+    const ingredientToUpdate = await prisma.ingredient.findFirst({
+      where: {
+        id: ingredientId,
+        userId: Number(req.user.id),
+      },
+    });
 
-    if (!ingredient || ingredient.user?._id.toString() !== req.user.id) {
+    if (!ingredientToUpdate) {
       res.status(404);
       throw new Error("We could not find the ingredient you were looking for");
     }
 
-    await ingredient.updateOne({
-      ...req.body,
+    await prisma.ingredient.update({
+      where: {
+        id: ingredientId,
+      },
+      data: {
+        ...req.body,
+      },
     });
 
     res.status(201).json({ message: "updated" });
@@ -88,9 +106,11 @@ export const createIngredient = asyncHandler(
       throw new Error("You must provide a name for your ingredient");
     }
 
-    const existingIngredient = await Ingredient.findOne({
-      name: name,
-      user: undefined,
+    const existingIngredient = await prisma.ingredient.findFirst({
+      where: {
+        name,
+        userId: null,
+      },
     });
 
     if (existingIngredient) {
@@ -98,9 +118,12 @@ export const createIngredient = asyncHandler(
       throw new Error("This ingredient already exists");
     }
 
-    await Ingredient.create({
-      name: name,
-      category,
+    await prisma.ingredient.create({
+      data: {
+        name,
+        category,
+        userId: null,
+      },
     });
 
     res.status(201).json({ message: "Successfully created ingredient" });
@@ -117,15 +140,17 @@ export const createIngredient = asyncHandler(
 
 export const getIngredientsForUser = asyncHandler(
   async (req, res: GetIngredientsResponse) => {
-    const userId = req.user.id;
+    const userId = Number(req.user.id);
 
-    const ingredients = await Ingredient.find({
-      user: userId,
+    const ingredients = await prisma.ingredient.findMany({
+      where: {
+        userId,
+      },
     });
 
     const responseIngredients = ingredients.map((ingredient) => {
       return {
-        id: ingredient._id.toString(),
+        id: ingredient.id,
         name: ingredient.name,
         category: ingredient.category,
       };
@@ -137,8 +162,6 @@ export const getIngredientsForUser = asyncHandler(
 
 //--------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------
-
 /**
  * @method GET
  * @route /ingredients
@@ -147,13 +170,15 @@ export const getIngredientsForUser = asyncHandler(
 
 export const getPublicIngredients = asyncHandler(
   async (req, res: GetIngredientsResponse) => {
-    const ingredients = await Ingredient.find({
-      user: undefined,
+    const ingredients = await prisma.ingredient.findMany({
+      where: {
+        userId: null,
+      },
     });
 
     const responseIngredients = ingredients.map((ingredient) => {
       return {
-        id: ingredient._id.toString(),
+        id: ingredient.id,
         name: ingredient.name,
         category: ingredient.category,
       };

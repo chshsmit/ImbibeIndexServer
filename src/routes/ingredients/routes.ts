@@ -1,5 +1,5 @@
 import express from "express";
-import protect from "../../middleware/auth";
+import { protectV2 } from "../../middleware/auth";
 import {
   createIngredient,
   createIngredientForUser,
@@ -7,12 +7,13 @@ import {
   getPublicIngredients,
   updateIngredient,
 } from "./controller";
+
 const router = express.Router();
 
 router.post("/", createIngredient);
 router.get("/", getPublicIngredients);
-router.patch("/:id", protect, updateIngredient);
-router.post("/user", protect, createIngredientForUser);
-router.get("/user", protect, getIngredientsForUser);
+router.patch("/:id", protectV2, updateIngredient);
+router.post("/user", protectV2, createIngredientForUser);
+router.get("/user", protectV2, getIngredientsForUser);
 
 export default router;

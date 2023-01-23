@@ -1,13 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
-import Collection from "../../model/Collection";
 import {
   CollectionForUser,
-  CollectionForUserRecipe,
   CreateCollectionRequest,
   CreateCollectionResponse,
   GetCollectionsForUserResponse,
-  SubCollection,
 } from "./types";
+
+const prisma = new PrismaClient();
 
 //--------------------------------------------------------------------------------
 
@@ -18,30 +18,58 @@ import {
  */
 export const getRootCollectionForUser = asyncHandler(
   async (req, res: GetCollectionsForUserResponse) => {
-    const userCollections = await Collection.find({ user: req.user.id })
-      .populate<{ recipes: Array<CollectionForUserRecipe> }>({
-        path: "recipes",
-        select: "_id name tags",
-      })
-      .populate<{ collections: Array<SubCollection> }>({
-        path: "collections",
-        select: "_id collectionName",
-      });
+    const allCollectionsForUser = await prisma.collection.findMany({
+      where: {
+        userId: Number(req.user.id),
+      },
+      include: {
+        recipes: {
+          include: {
+            tags: {
+              include: {
+                tag: {
+                  select: {
+                    id: true,
+                    tagName: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        subCollections: {
+          select: {
+            id: true,
+            collectionName: true,
+          },
+        },
+      },
+    });
 
-    const collections: Record<string, CollectionForUser> = {};
-    let rootCollectionId = "";
-    userCollections.forEach((collection) => {
+    const collections: Record<number, CollectionForUser> = {};
+    let rootCollectionId = 0;
+    allCollectionsForUser.forEach((collection) => {
       if (collection.isRootCollection) {
         rootCollectionId = collection.id;
       }
-      const collectionForUser = {
+
+      const recipes = collection.recipes.map((recipe) => {
+        return {
+          name: recipe.name,
+          id: recipe.id,
+          tags: recipe.tags.map((tag) => tag.tag.tagName),
+        };
+      });
+
+      const collectionForUser: CollectionForUser = {
         collectionName: collection.collectionName,
         id: collection.id,
         isRootCollection: collection.isRootCollection,
-        subCollections: collection.collections,
-        parentCollection: collection.parentCollection?.toString(),
-        recipes: collection.recipes,
+        subCollections: collection.subCollections,
+        parentCollection: collection.parentCollectionId ?? undefined,
+        recipes,
       };
+
       collections[collection.id] = collectionForUser;
     });
 
@@ -71,7 +99,11 @@ export const createCollection = asyncHandler(
       throw new Error("You must provide the parent collection");
     }
 
-    const parentCollection = await Collection.findById(parentCollectionId);
+    const parentCollection = await prisma.collection.findUnique({
+      where: {
+        id: Number(parentCollectionId),
+      },
+    });
 
     if (!parentCollection) {
       res.status(400);
@@ -80,24 +112,20 @@ export const createCollection = asyncHandler(
       );
     }
 
-    const newCollection = await Collection.create({
-      user: req.user.id,
-      collectionName: name,
-      isRootCollection: false,
-      parentCollection: parentCollectionId,
-      collections: [],
-      recipes: [],
+    const newCollection = await prisma.collection.create({
+      data: {
+        userId: Number(req.user.id),
+        collectionName: name,
+        isRootCollection: false,
+        parentCollectionId: Number(parentCollectionId),
+      },
     });
 
     if (newCollection) {
-      await parentCollection.updateOne({
-        $push: { collections: newCollection.id },
-      });
-
       res.status(201).json({
         id: newCollection.id,
         collectionName: newCollection.collectionName,
-        parentCollection: parentCollection.id,
+        parentCollection: newCollection.parentCollectionId!,
       });
     } else {
       res.status(400);

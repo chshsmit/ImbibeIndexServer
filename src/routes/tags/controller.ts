@@ -1,10 +1,12 @@
+import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
-import Tag from "../../model/Tag";
 import {
   CreateTagsRequest,
   CreateTagsResponse,
   GetTagsResponse,
 } from "./types";
+
+const prisma = new PrismaClient();
 
 //--------------------------------------------------------------------------------
 
@@ -22,28 +24,19 @@ export const createTags = asyncHandler(
       throw new Error("No tags provided");
     }
 
-    const tagsFromMongo = await Tag.find();
-
-    if (!tagsFromMongo) {
-      res.status(500);
-      throw new Error("Something unexpected happened");
-    }
-
-    const currentTags = tagsFromMongo.map((tag) => tag.tagName);
-
-    const tagsToSave = tags.filter((tag) => !currentTags.includes(tag));
-
-    const newTags = tagsToSave.map((tag) => {
-      const newTag = new Tag();
-      newTag.tagName = tag;
-      return newTag;
+    const newTags = tags.map((tag) => {
+      return {
+        tagName: tag,
+      };
     });
 
-    // Save all tags
-    await Tag.insertMany(newTags);
+    const createdTags = await prisma.tag.createMany({
+      data: newTags,
+      skipDuplicates: true,
+    });
 
     res.status(201).json({
-      message: `Successfully saved ${tagsToSave.length} new tags`,
+      message: `Successfully saved ${createdTags.count} new tags`,
     });
   }
 );
@@ -56,7 +49,7 @@ export const createTags = asyncHandler(
  * @protected no
  */
 export const getTags = asyncHandler(async (req, res: GetTagsResponse) => {
-  const tags = await Tag.find();
+  const tags = await prisma.tag.findMany();
 
   res.status(200).json({
     tags: tags.map((tag) => {

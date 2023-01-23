@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import protect, { useUser } from "../../middleware/auth";
+import { protectV2, useUserV2 } from "../../middleware/auth";
 import {
   createRecipe,
   getRecipeById,
@@ -8,25 +8,24 @@ import {
   updateRecipe,
   uploadImage,
 } from "./controller";
+
 const router = express.Router();
 
 // Creating a recipe
-router.post("/", protect, createRecipe);
-
+router.post("/", protectV2, createRecipe);
 // Updating a recipe
-router.patch("/:id", protect, updateRecipe);
-
+router.patch("/:id", protectV2, updateRecipe);
 // Get a recipe
-router.get("/:id", useUser, getRecipeById);
+router.get("/:id", useUserV2, getRecipeById);
+
+// Like a recipe
+router.post("/:id/like", protectV2, likeRecipe);
 
 // Upload image for recipe
 router.post(
   "/:id/image",
-  [protect, multer({ dest: "uploads/" }).single("image")],
+  [protectV2, multer({ dest: "uploads/" }).single("image")],
   uploadImage
 );
-
-// Like a recipe
-router.post("/:id/like", protect, likeRecipe);
 
 export default router;

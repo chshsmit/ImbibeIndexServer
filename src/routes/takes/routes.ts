@@ -1,10 +1,10 @@
 import express from "express";
-import protect from "../../middleware/auth";
+import { protectV2 } from "../../middleware/auth";
 import { createTake, updateTake } from "./controller";
 
 const router = express.Router();
 
-router.post("/recipe/:recipeId", protect, createTake);
-router.patch("/:takeId", protect, updateTake);
+router.patch("/:takeId", protectV2, updateTake);
+router.post("/recipe/:recipeId", protectV2, createTake);
 
 export default router;

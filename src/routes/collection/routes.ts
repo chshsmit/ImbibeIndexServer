@@ -1,13 +1,13 @@
 import express from "express";
-import protect from "../../middleware/auth";
+import { protectV2 } from "../../middleware/auth";
 import { createCollection, getRootCollectionForUser } from "./controller";
 
 const router = express.Router();
 
 // Creating a new collection
-router.post("/", protect, createCollection);
+router.post("/", protectV2, createCollection);
 
 // Getting collection for specific user
-router.get("/user", protect, getRootCollectionForUser);
+router.get("/user", protectV2, getRootCollectionForUser);
 
 export default router;

@@ -1,4 +1,4 @@
-import User from "../../model/User";
+import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import AuthUtils from "../../utils/AuthUtils";
 import {
@@ -8,7 +8,8 @@ import {
   RegisterRequest,
   RegisterResponse,
 } from "./types";
-import Collection from "../../model/Collection";
+
+const prisma = new PrismaClient();
 
 //--------------------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ import Collection from "../../model/Collection";
  * @route /user/register
  * @protected no
  */
+
 export const registerUser = asyncHandler(
   async (req: RegisterRequest, res: RegisterResponse) => {
     const { name, email, displayName, password } = req.body;
@@ -27,7 +29,12 @@ export const registerUser = asyncHandler(
     }
 
     // Check if user exists
-    const userExists = await User.findOne({ email });
+    const userExists = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
     if (userExists) {
       res.status(400);
       throw new Error("A user already exists with that email");
@@ -36,34 +43,32 @@ export const registerUser = asyncHandler(
     // Hash Password
     const hashedPassword = await AuthUtils.hash(password);
 
-    // Create the user
-    const user = await User.create({
-      name,
-      email,
-      displayName,
-      password: hashedPassword,
+    // Create the user AND their root collection
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        displayName,
+        password: hashedPassword,
+        collections: {
+          create: [
+            {
+              collectionName: "Home",
+              isRootCollection: true,
+            },
+          ],
+        },
+      },
     });
 
     if (user) {
-      // Let's create their root collection
-      await Collection.create({
-        user: user.id,
-        collectionName: "Home",
-        isRootCollection: true,
-        collections: [],
-        recipes: [],
-      });
-
       res.status(201).json({
         id: user.id,
         name: user.name,
         email: user.email,
         displayName: user.displayName,
-        token: AuthUtils.generateJwtToken(user._id),
+        token: AuthUtils.generateJwtToken(user.id),
       });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
     }
   }
 );
@@ -80,7 +85,12 @@ export const loginUser = asyncHandler(
     const { email, password } = req.body;
 
     // Check for user email
-    const user = await User.findOne({ email });
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
     if (user && (await AuthUtils.passwordsAreEqual(password, user.password))) {
       res.json({
@@ -88,11 +98,11 @@ export const loginUser = asyncHandler(
         name: user.name,
         email: user.email,
         displayName: user.displayName,
-        token: AuthUtils.generateJwtToken(user._id),
+        token: AuthUtils.generateJwtToken(user.id),
       });
     } else {
       res.status(400);
-      throw new Error("Invalid Credentials");
+      throw new Error("Invalid credentials");
     }
   }
 );
@@ -105,7 +115,11 @@ export const loginUser = asyncHandler(
  * @protected yes
  */
 export const getSelf = asyncHandler(async (req, res: GetSelfResponse) => {
-  const user = await User.findById(req.user.id);
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(req.user.id),
+    },
+  });
 
   if (!user) {
     res.status(400);

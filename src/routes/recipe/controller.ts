@@ -1,19 +1,17 @@
+import { PrismaClient } from "@prisma/client";
 import { S3 } from "aws-sdk";
 import asyncHandler from "express-async-handler";
 import fs from "fs";
-import Collection from "../../model/Collection";
-import Recipe from "../../model/Recipe";
-import RecipeTake from "../../model/RecipeTake";
 import { getImageForRecipe } from "../../utils/utils";
 import {
   CreateRecipeRequest,
   CreateRecipeResponse,
   GetRecipeResponse,
-  TagForRecipeReponse,
-  TakeForRecipeResponse,
   UpdateRecipeRequest,
-  UpdateRecipeResponse
+  UpdateRecipeResponse,
 } from "./types";
+
+const prisma = new PrismaClient();
 
 //--------------------------------------------------------------------------------
 
@@ -39,38 +37,37 @@ export const createRecipe = asyncHandler(
       throw new Error("You need provide the collection this recipe is part of");
     }
 
-    const collectionForRecipe = await Collection.findById(collectionId);
-
-    if (!collectionForRecipe) {
-      res.status(400);
-      throw new Error(
-        `The collection with id [${collectionId}] does not exist`
-      );
-    }
-
-    // Lets create the first take right away
-    const firstTake = await RecipeTake.create({
-      user: req.user.id,
-      takeNumber: 1,
-      ingredients: [],
+    // TODO: Make sure the user that submitted this owns the collection the recipe
+    //       is going in.
+    const newRecipe = await prisma.recipe.create({
+      data: {
+        name,
+        userId: Number(req.user.id),
+        isPublished: isPublished === "Y",
+        collectionId: Number(collectionId),
+        takes: {
+          create: [
+            {
+              takeNumber: 1,
+              takeNotes: "",
+              userId: Number(req.user.id),
+            },
+          ],
+        },
+        likes: {
+          create: [
+            {
+              userId: Number(req.user.id),
+            },
+          ],
+        },
+      },
     });
 
-    const recipe = await Recipe.create({
-      name,
-      user: req.user.id,
-      isPublished: isPublished === "Y",
-      collectionForRecipe: collectionForRecipe.id,
-      takes: [firstTake.id],
-      likes: [req.user.id],
-    });
-
-    if (recipe) {
-      // Lets add the recipe to the collection
-      await collectionForRecipe.updateOne({ $push: { recipes: recipe.id } });
-
+    if (newRecipe) {
       res.status(201).json({
-        id: recipe.id,
-        name: recipe.name,
+        id: newRecipe.id,
+        name: newRecipe.name,
       });
     } else {
       res.status(400);
@@ -82,21 +79,30 @@ export const createRecipe = asyncHandler(
 //--------------------------------------------------------------------------------
 
 export const likeRecipe = asyncHandler(async (req, res) => {
-  const recipe = await Recipe.findById(req.params.id);
+  const userLike = await prisma.recipeLike.findUnique({
+    where: {
+      userId_recipeId: {
+        userId: Number(req.user.id),
+        recipeId: Number(req.params.id),
+      },
+    },
+  });
 
-
-  if (!recipe) {
-    res.status(404);
-    throw new Error("We could not find that recipe");
-  }
-
-  if (recipe.likes.includes(req.user.id)) {
-    await recipe.updateOne({
-      $pull: { likes: req.user.id },
+  if (!userLike) {
+    await prisma.recipeLike.create({
+      data: {
+        userId: Number(req.user.id),
+        recipeId: Number(req.params.id),
+      },
     });
   } else {
-    await recipe.updateOne({
-      $push: { likes: req.user.id },
+    await prisma.recipeLike.delete({
+      where: {
+        userId_recipeId: {
+          userId: Number(req.user.id),
+          recipeId: Number(req.params.id),
+        },
+      },
     });
   }
 
@@ -106,15 +112,19 @@ export const likeRecipe = asyncHandler(async (req, res) => {
 //--------------------------------------------------------------------------------
 
 export const uploadImage = asyncHandler(async (req, res) => {
-  const recipe = await Recipe.findOne({
-    user: req.user.id,
-    _id: req.params.id,
-  });
-
   if (!req.file) {
     res.status(400);
     throw new Error("No image was provided");
   }
+
+  const recipe = await prisma.recipe.findUnique({
+    where: {
+      id_userId: {
+        id: Number(req.params.id),
+        userId: Number(req.user.id),
+      },
+    },
+  });
 
   if (!recipe) {
     res.status(404);
@@ -132,9 +142,10 @@ export const uploadImage = asyncHandler(async (req, res) => {
 
   const params: S3.PutObjectRequest = {
     Bucket: process.env.S3_BUCKET_NAME!,
-    Key: recipe.id,
+    Key: `picture-for-recipe-${recipe.id}`,
     Body: fileContent,
   };
+
   s3.upload(params, function (err) {
     if (err) {
       res.status(400);
@@ -157,21 +168,51 @@ export const uploadImage = asyncHandler(async (req, res) => {
  */
 export const updateRecipe = asyncHandler(
   async (req: UpdateRecipeRequest, res: UpdateRecipeResponse) => {
-    const recipe = await Recipe.findById(req.params.id);
+    let createTags: { tagId: number }[] = [];
+    if (req.body.tags) {
+      createTags = req.body.tags.map((tagId) => {
+        const numberTag = Number(tagId);
 
-    if (!recipe) {
-      res.status(404);
-      throw new Error(`No recipe found with id: ${req.params.id}`);
+        return {
+          tagId: numberTag,
+        };
+      });
     }
 
-    if (recipe.user.toString() !== req.user.id) {
-      res.status(404);
-      console.error("Unauthorized access");
-      throw new Error("We did not find this recipe sorry");
-    }
+    // TODO: Figure out how to solve the tags issue more elegantly
+    // There should be a way to delete and create in the same request
 
-    await recipe.updateOne({
-      ...req.body,
+    // Delete all the tags for now
+    await prisma.recipe.update({
+      where: {
+        id_userId: {
+          id: Number(req.params.id),
+          userId: Number(req.user.id),
+        },
+      },
+      data: {
+        tags: {
+          deleteMany: {},
+        },
+      },
+      include: {
+        tags: true,
+      },
+    });
+
+    await prisma.recipe.update({
+      where: {
+        id_userId: {
+          id: Number(req.params.id),
+          userId: Number(req.user.id),
+        },
+      },
+      data: {
+        ...req.body,
+        tags: {
+          create: createTags,
+        },
+      },
     });
 
     res.status(200).json({
@@ -183,12 +224,6 @@ export const updateRecipe = asyncHandler(
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
 
-interface UserForRecipe {
-  name: string;
-  displayName: string;
-  id: string;
-}
-
 /**
  * @method GET
  * @route /recipe/:id
@@ -197,35 +232,30 @@ interface UserForRecipe {
 
 export const getRecipeById = asyncHandler(
   async (req, res: GetRecipeResponse) => {
-    let recipe;
-    try {
-      recipe = await Recipe.findById(req.params.id)
-        .populate<{
-          user: UserForRecipe;
-        }>("user", "name displayName id")
-        .populate<{
-          takes: Array<TakeForRecipeResponse>;
-        }>({
-          path: "takes",
-          select: "id takeNumber steps takeNotes",
-          populate: [
-            {
-              path: "ingredients",
-              populate: {
-                path: "ingredient",
-                select: "name",
+    const recipe = await prisma.recipe.findUnique({
+      where: {
+        id: Number(req.params.id),
+      },
+      include: {
+        user: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        takes: {
+          include: {
+            ingredients: {
+              include: {
+                ingredient: true,
               },
             },
-          ],
-        })
-        .populate<{ tags: Array<TagForRecipeReponse> }>({
-          path: "tags",
-          select: "_id tagName",
-        });
-    } catch (err) {
-      res.status(404);
-      throw new Error("Recipe not found");
-    }
+            steps: true,
+          },
+        },
+        likes: true,
+      },
+    });
 
     if (!recipe) {
       res.status(404);
@@ -233,7 +263,7 @@ export const getRecipeById = asyncHandler(
     }
 
     if (!recipe.isPublished) {
-      if (!req.user || req.user.id !== recipe.user.id) {
+      if (!req.user || Number(req.user.id) !== recipe.user.id) {
         res.status(404);
         throw new Error("We could not find the recipe you were looking for");
       }
@@ -248,7 +278,29 @@ export const getRecipeById = asyncHandler(
     res.status(200).json({
       id: recipe.id,
       name: recipe.name,
-      takes: recipe.takes,
+      takes: recipe.takes.map((take) => {
+        return {
+          id: take.id,
+          takeNumber: take.takeNumber,
+          takeNotes: take.takeNotes,
+          ingredients: take.ingredients.map((ingredient) => {
+            return {
+              ingredient: {
+                id: ingredient.ingredient.id,
+                name: ingredient.ingredient.name,
+              },
+              amount: ingredient.amount,
+              order: ingredient.order,
+            };
+          }),
+          steps: take.steps.map((step) => {
+            return {
+              order: step.order,
+              stepText: step.stepText,
+            };
+          }),
+        };
+      }),
       recipeDescription: recipe.recipeDescription,
       isPublished: recipe.isPublished,
       createdBy: {
@@ -258,10 +310,10 @@ export const getRecipeById = asyncHandler(
       createdAt: recipe.createdAt,
       isEditable,
       tags: recipe.tags.map((tag) => {
-        return { id: tag._id, tagName: tag.tagName };
+        return { id: tag.tagId, tagName: tag.tag.tagName };
       }),
       image: imageUrl,
-      likes: recipe.likes.map((like) => like.toString()),
+      likes: recipe.likes.map((like) => like.userId),
     });
   }
 );
