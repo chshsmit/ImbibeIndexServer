@@ -41,6 +41,7 @@ export const updateTake = asyncHandler(async (req: CreateTakeRequest, res) => {
     },
   });
 
+  // TODO: NEED TO UPDATE THIS SO IT TAKES A LIST OF DELETED INGREDIENTS AND STEPS
   // Save all the steps
   if (steps) {
     for (const step of steps) {
