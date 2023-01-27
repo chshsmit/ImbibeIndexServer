@@ -263,6 +263,7 @@ export const getRecipeById = asyncHandler(
           },
         },
         likes: true,
+        favorited: true,
       },
     });
 
@@ -325,6 +326,7 @@ export const getRecipeById = asyncHandler(
       }),
       image: imageUrl,
       likes: recipe.likes.map((like) => like.userId),
+      favoritedUsers: recipe.favorited.map((favorite) => favorite.userId),
     });
   }
 );

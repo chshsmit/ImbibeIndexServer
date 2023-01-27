@@ -151,8 +151,10 @@ model FavoriteForUser {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // Relations
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id]) // The user that favorited
   userId    Int
-  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id]) // The recipe that was favorited
   recipeId  Int
+
+  @@unique([userId, recipeId])
 }

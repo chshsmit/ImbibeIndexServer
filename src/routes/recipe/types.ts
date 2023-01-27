@@ -78,5 +78,6 @@ interface GetRecipeResponseData {
   image?: string;
   isPublished: boolean;
   likes: Array<number>;
+  favoritedUsers: Array<number>;
 }
 export type GetRecipeResponse = CustomResponse<GetRecipeResponseData>;

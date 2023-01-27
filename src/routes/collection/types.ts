@@ -30,6 +30,7 @@ export interface CollectionForUserRecipe {
   name: string;
   tags: Array<string>;
   id: number;
+  imageUrl?: string;
 }
 
 export interface SubCollection {

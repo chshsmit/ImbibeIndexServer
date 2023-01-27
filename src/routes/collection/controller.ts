@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
+import { getImageForRecipe } from "../../utils/utils";
 import {
   CollectionForUser,
   CreateCollectionRequest,
@@ -48,18 +49,23 @@ export const getRootCollectionForUser = asyncHandler(
 
     const collections: Record<number, CollectionForUser> = {};
     let rootCollectionId = 0;
-    allCollectionsForUser.forEach((collection) => {
+
+    for (const collection of allCollectionsForUser) {
       if (collection.isRootCollection) {
         rootCollectionId = collection.id;
       }
 
-      const recipes = collection.recipes.map((recipe) => {
-        return {
-          name: recipe.name,
-          id: recipe.id,
-          tags: recipe.tags.map((tag) => tag.tag.tagName),
-        };
-      });
+      const recipes = await Promise.all(
+        collection.recipes.map(async (recipe) => {
+          const recipeImageUrl = await getImageForRecipe(recipe.id);
+          return {
+            name: recipe.name,
+            id: recipe.id,
+            tags: recipe.tags.map((tag) => tag.tag.tagName),
+            imageUrl: recipeImageUrl,
+          };
+        })
+      );
 
       const collectionForUser: CollectionForUser = {
         collectionName: collection.collectionName,
@@ -71,7 +77,7 @@ export const getRootCollectionForUser = asyncHandler(
       };
 
       collections[collection.id] = collectionForUser;
-    });
+    }
 
     res.status(200).json({
       collections,

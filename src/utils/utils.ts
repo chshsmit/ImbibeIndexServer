@@ -11,13 +11,15 @@ export const getImageForRecipe = async (
     },
   });
 
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: `picture-for-recipe-${recipeId}`,
+    Expires: 60 * 60 * 5,
+  };
   let image;
   try {
-    image = await s3.getSignedUrl("getObject", {
-      Bucket: process.env.S3_BUCKET_NAME!,
-      Key: `picture-for-recipe-${recipeId}`,
-      Expires: 60 * 60 * 5,
-    });
+    // TODO: Figure out how to handle image not existing
+    image = await s3.getSignedUrl("getObject", params);
   } catch (err) {
     image = "";
   }

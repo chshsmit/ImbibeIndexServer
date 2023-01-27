@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import errorHandler from "./middleware/errorHandler";
 import CollectionRouter from "./routes/collection/routes";
+import FavoriteRouter from "./routes/favorite/routes";
 import IngredientRouter from "./routes/ingredients/routes";
 import RecipeRouter from "./routes/recipe/routes";
 import SearchRouter from "./routes/search/routes";
@@ -35,5 +36,6 @@ app.use("/tags", TagRouter);
 app.use("/ingredients", IngredientRouter);
 app.use("/takes", TakeRouter);
 app.use("/search", SearchRouter);
+app.use("/favorite", FavoriteRouter);
 
 app.use(errorHandler);

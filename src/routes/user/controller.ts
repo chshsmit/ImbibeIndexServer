@@ -90,6 +90,9 @@ export const loginUser = asyncHandler(
       where: {
         email,
       },
+      include: {
+        favorites: true,
+      },
     });
 
     if (user && (await AuthUtils.passwordsAreEqual(password, user.password))) {
@@ -118,6 +121,9 @@ export const getSelf = asyncHandler(async (req, res: GetSelfResponse) => {
   const user = await prisma.user.findUnique({
     where: {
       id: Number(req.user.id),
+    },
+    include: {
+      favorites: true,
     },
   });
 
