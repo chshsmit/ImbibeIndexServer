@@ -2,6 +2,7 @@ import {
   CustomRequest,
   CustomResponse,
 } from "../../types/Requests/CustomRequest";
+import { TagData } from "../tags/types";
 
 //--------------------------------------------------------------------------------
 // Create a recipe
@@ -61,7 +62,6 @@ export interface TakeForRecipeResponse {
   steps: Array<TakeStep>;
   takeNotes?: string | null;
 }
-// interface RecipeTake {}
 
 interface GetRecipeResponseData {
   id: number;
@@ -74,7 +74,7 @@ interface GetRecipeResponseData {
   takes: Array<TakeForRecipeResponse>;
   recipeDescription?: string | null;
   isEditable: boolean;
-  tags: Array<{ id: number; tagName: string }>;
+  tags: Array<TagData>;
   image?: string;
   isPublished: boolean;
   likes: Array<number>;

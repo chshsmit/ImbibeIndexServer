@@ -24,7 +24,13 @@ export type CreateTagsResponse = CustomResponse<CreateTagsResponseData>;
 //--------------------------------------------------------------------------------
 
 interface GetTagsResponseData {
-  tags: Array<{ id: string | number; tagName: string }>;
+  tags: Array<TagData>;
 }
 
 export type GetTagsResponse = CustomResponse<GetTagsResponseData>;
+
+// Overall tag data
+export interface TagData {
+  id: number;
+  tagName: string;
+}
