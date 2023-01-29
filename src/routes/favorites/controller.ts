@@ -57,9 +57,11 @@ export const getFavoritesForUser = asyncHandler(
             id: true,
             name: true,
             createdAt: true,
+            isPublished: true,
             user: {
               select: {
                 displayName: true,
+                id: true,
               },
             },
             tags: {
@@ -78,23 +80,29 @@ export const getFavoritesForUser = asyncHandler(
     });
 
     const responseData: Array<FavoriteRecipe> = await Promise.all(
-      favoritesForUser.map(async (favorite) => {
-        const imageUrl = await getImageForRecipe(favorite.recipe.id);
+      favoritesForUser
+        .filter((favorite) => {
+          return (
+            favorite.recipe.isPublished || favorite.recipe.user.id === userId
+          );
+        })
+        .map(async (favorite) => {
+          const imageUrl = await getImageForRecipe(favorite.recipe.id);
 
-        return {
-          id: favorite.recipe.id,
-          name: favorite.recipe.name,
-          createdAt: favorite.recipe.createdAt,
-          createdBy: favorite.recipe.user.displayName,
-          imageUrl,
-          tags: favorite.recipe.tags.map((tag) => {
-            return {
-              id: tag.tag.id,
-              tagName: tag.tag.tagName,
-            };
-          }),
-        };
-      })
+          return {
+            id: favorite.recipe.id,
+            name: favorite.recipe.name,
+            createdAt: favorite.recipe.createdAt,
+            createdBy: favorite.recipe.user.displayName,
+            imageUrl,
+            tags: favorite.recipe.tags.map((tag) => {
+              return {
+                id: tag.tag.id,
+                tagName: tag.tag.tagName,
+              };
+            }),
+          };
+        })
     );
 
     res.status(200).json(responseData);
