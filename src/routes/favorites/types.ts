@@ -6,6 +6,8 @@ export interface FavoriteRecipe {
   name: string;
   createdAt: Date;
   tags: Array<TagData>;
+  createdBy: string;
+  imageUrl: string;
 }
 
 export type FavoritesForUserResponse = CustomResponse<Array<FavoriteRecipe>>;

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
+import { getImageForRecipe } from "../../utils/utils";
 import { FavoriteRecipe, FavoritesForUserResponse } from "./types";
 
 const prisma = new PrismaClient();
@@ -57,6 +58,11 @@ export const getFavoritesForUser = asyncHandler(
             id: true,
             name: true,
             createdAt: true,
+            user: {
+              select: {
+                displayName: true,
+              },
+            },
             tags: {
               select: {
                 tag: {
@@ -72,12 +78,16 @@ export const getFavoritesForUser = asyncHandler(
       },
     });
 
-    const responseData: Array<FavoriteRecipe> = favoritesForUser.map(
-      (favorite) => {
+    const responseData: Array<FavoriteRecipe> = await Promise.all(
+      favoritesForUser.map(async (favorite) => {
+        const imageUrl = await getImageForRecipe(favorite.recipe.id);
+
         return {
           id: favorite.recipe.id,
           name: favorite.recipe.name,
           createdAt: favorite.recipe.createdAt,
+          createdBy: favorite.recipe.user.displayName,
+          imageUrl,
           tags: favorite.recipe.tags.map((tag) => {
             return {
               id: tag.tag.id,
@@ -85,7 +95,7 @@ export const getFavoritesForUser = asyncHandler(
             };
           }),
         };
-      }
+      })
     );
 
     res.status(200).json(responseData);
