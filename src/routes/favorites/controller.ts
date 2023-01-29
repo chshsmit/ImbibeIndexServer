@@ -43,7 +43,6 @@ export const favoriteOrUnfavoriteRecipe = asyncHandler(async (req, res) => {
 
 //--------------------------------------------------------------------------------
 
-// TODO: Get information for sub recipe
 export const getFavoritesForUser = asyncHandler(
   async (req, res: FavoritesForUserResponse) => {
     const userId = Number(req.user.id);
